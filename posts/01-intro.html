@@ -127,12 +127,12 @@
 
 <p>
   One of the other motivations behind classical distributed computing was the discovery of performance speedups through parallelism. 
-  As early as the 1970s, Amdahl's Law formalized the limits of speedup in a system with a fixed sequential fraction, while Gustafson’s Law in the 1980s reframed the problem for scaled workloads, showing that as we increase problem size, more of it can be parallelized. 
+  As early as the 1970s, Amdahl's Law formalized the limits of speedup in a system with a fixed sequential fraction, while Gustafson's Law in the 1980s reframed the problem for scaled workloads, showing that as we increase problem size, more of it can be parallelized. 
   These insights partially justified the shift to multi-core architectures and distributed systems, even when communication overhead was non-trivial.
 </p>
 
 <p>
-  Quantum computing, however, doesn’t present parallelism in the same way as classical systems. 
+  Quantum computing, however, doesn't present parallelism in the same way as classical systems. 
   Superposition and entanglement give quantum systems a kind of inherent parallelism. You'll often here the simplification that quantum parallelism give sus exponentially many computational paths encoded in a single state. 
   But this is not true, quantum parallelism is not directly accessible: we cannot observe all paths simultaneously, nor can we arbitrarily manipulate individual branches.
   Also unlike classical computers, quantum computer can perform operations on distinct qubits at the same time. 
@@ -149,61 +149,154 @@
 </p>
 
 
-<h2>  Infrastructure Challenges </h2>
+<h2>Infrastructure Challenges</h2>
 
-    Our entire distributed quantum computing infrastructure assumes circuit-based models.
+<p>
+  Implementation challenges aside, there are also practical problems we can't ignore.
+  Right now, we're working within a fractured quantum ecosystem.
+  Superconducting qubits, trapped ions, photonics — each platform is racing to prove itself as the dominant one.
+  They all come with strengths and tradeoffs, but there's no clear winner.
+  Worse still, they don't speak the same language.
+  Not everything runs on circuits! 
+  Today's quantum computers run on different computational models. 
+  From measurement-based quantum computing (MBQC) to topological models, these machines don't perform computations in the same way.
+  They don't interoperate cleanly, and they certainly weren't designed to work together.
+  Despite this hardware reality, most of the current distributed infrastructure work assumes circuit-based computation.
+  But the moment you try cross between modalities, that assumption no longer holds.
+</p>
 
-    Circuit models are not naturally compatible with photons — the main transportable qubit.
+<p>
+  Ecosystem heterogeneity becomes a serious problem when we start distributing.
+  Abstracting above or below the model is nice in theory — but today, distribution is anything but model-agnostic.
+  And inter-model interoperability?
+  Not even close.
+  This is more than a hardware limitation — it's a conceptual mismatch between how we compute and how we communicate.
+  Solving this will mean rethinking some of our core assumptions about distributed quantum computing.
+  That's where some of my current work is heading.
+  Keep an eye out for model-agnosticism on the horizon.
+</p>
 
-    This is a major limitation and an area where improvements are needed (hint at your upcoming work).
 
-<h2>  Current Strategies: Cutting and Knitting </h2>
+<h2>Current Strategies: Cutting and Knitting</h2>
 
-    To distribute circuits today:
+<p>
+  So what do I mean by <em>current distributed infrastructure assumes circuit-based computation</em>? 
+  Let's break it down.
+</p>
 
-        We model circuits as hypergraphs and solve a cutting problem (NP-hard).
+<p>
+  The standard approach today is to take a quantum circuit (a sequence of gates acting on qubits) and split it into smaller parts that can run on different devices. 
+  We usually model the circuit as a hypergraph, where qubit wires are nodes and gates are hyperedges connecting them.
+  The goal is to solve a cutting problem: how can we partition this graph across devices while keeping communication costs low?
+  This is an NP-hard problem, meaning even small circuits can produce difficult tradeoffs between cut size, depth, and overall fidelity.
+</p>
 
-        We can either:
+<p>
+  Once the circuit is cut, the pieces need to be "knitted" back together.
+  This can happen in two main ways: we can cut qubit wires, which requires teleporting quantum states between devices, or we can cut gates, which involves creating long-range entanglement links to simulate the missing multi-qubit interaction.
+  Both approaches are valid in theory.
+  But they rely on real quantum networks with high-fidelity links, fast entanglement distribution, and precise coordination between remote devices.
+  And right now, quantum networks for quantum compute are not yet at that level.
+</p>
 
-            Cut qubit wires (teleportation between QPUs),
+<p>
+  The alternative we see available in industry today is to simulate these quantum links using classical communication.
+  This works in simulation and in small experimental settings, but it's a bit like trying to run a Formula 1 car on a bicycle track.
+  You can move forward, but the track isn't designed for that kind of speed or fidelity.
+  You're constantly adapting the system to the limitations of classical infrastructure, instead of building infrastructure suited to quantum behavior.
+  When we talk about circuit "knitting" today, we're often referring to this classical workaround, which is something of a misnomer.
+  To emulate a quantum link over a classical channel, we run many shots on both sides of the cut and stitch together correlated measurement statistics.
+  This allows us to reconstruct expectation values as if the circuit had been whole.
+  But we aren't actually knitting quantum circuits together in the physical sense.
+  We're approximating their output distributions using classical post-processing.
+  Which racks up costs.
+</p>
 
-            Cut gates (long-distance entanglement-assisted gates).
+<h2>The Hardware conversation</h2>
 
-    Both strategies depend on real quantum networks — which are underdeveloped.
+<p>
+  Many quantum platforms (especially superconducting qubits) were not built with quantum networking in mind.
+  They're great for local, high-fidelity gates and fast control, but they can't directly emit or absorb flying qubits like photons.
+  To interface with a quantum network, they need an interconnect: a device that converts stationary qubits into photonic ones.
+  These interconnects are still in early stages.
+  They introduce unavoidable losses, noise, and latency.
+  The fidelity hit is significant, and the success rates for conversion remain low.
+  Even the <em>"super"</em> in superconducting can't dodge these <em>super losses</em>.
+  This creates a serious bottleneck.
+  A device may perform well in isolation but become nearly unusable when asked to communicate with others.
+  Until we have high-fidelity, low-loss interfaces / architectures that avoid the need for conversion entirely hardware will remain a core limitation for distributed quantum computing.
+</p>
 
-<h2>   Near-Term Approximations </h2>
 
-    Many experiments today "simulate" distributed quantum computing:
+<h2>Recent Progress and Open Needs</h2>
 
-        Using probabilistic quasi-channel decompositions.
+<p>
+  But despite this bleak state, the first real steps toward distributed quantum computing have been arriving!
+  In early 2025, Xanadu introduced <strong>Aurora</strong> — the first modular, networked photonic quantum computer.
+  Aurora connects 35 photonic chips via 13 kilometers of optical fiber across four server racks, forming a 12-qubit system designed for scalability and fault tolerance.
+  This marks the first time a quantum computer has been built to be modular, networked, and truly scalable with quantum channels.
+  And although it is still in the early stages, it represents a significant step toward a future where quantum computers can be distributed across multiple locations and connected via quantum networks.
+</p>
 
-        Good for small systems (hundreds of qubits), but scales poorly.
+<p>
+  Around the same time, researchers at Oxford University demonstrated the first instance of distributed quantum computing by linking two separate quantum processors via a photonic network.
+  They executed a distributed version of Grover's search algorithm, achieving an 86% fidelity for a teleported controlled-Z gate between modules and a 71% success rate for the algorithm.
+  The experiment used trapped-ion QPUs and showed that non-trivial distributed algorithms are feasible even with current hardware.
+</p>
 
-<h2>   Hardware Limitations </h2>
+<p>
+  Another major development came from TU Delft, where researchers at QuTech and the Quantum Internet Alliance introduced <em>QNodeOS</em> — the first operating system for quantum networks.
+  QNodeOS provides a hardware-agnostic abstraction layer, letting quantum applications issue high-level commands like entanglement generation or inter-node operations without being tied to specific devices.
+  These requests are translated into hardware-specific instructions that coordinate timing, entanglement, and classical messaging between nodes.
+  However, the system still assumes that each node runs gate-based quantum circuits.
+  The computational model remains fixed, even if the hardware platform is abstracted.
+  This is a major step forward, but it still leaves open the question of how to coordinate distributed computations across different models entirely.
+</p>
 
-    Many platforms (especially superconducting qubits) cannot directly interact with quantum networks.
 
-    Superconducting setups need interconnects to convert to photons, introducing unavoidable losses.
+<p>
+  When all is said and done these are significant milestones, but much remains to be done:
+</p>
 
-    (Optional pun: "Even the 'super' in superconducting can't dodge these super losses.")
+<ul>
+  <li>
+    Conducting experiments on actual distributed computations, such as complex circuits, quantum walks, and MBQC patterns.
+  </li>
+  <li>
+    Developing quantum network experiments that specifically target quantum computing needs, moving beyond network oriented applications like quantum key distribution (QKD).
+  </li>
+  <li>
+    Demonstrating even short-distance server-to-server quantum communication, which is both urgent and impactful for validating distributed architectures.
+  </li>
+</ul>
 
-<h2>   Recent Progress and Open Needs </h2>
+<p>
+  The field is progressing, but to realize the full potential of distributed quantum computing, we need to focus on these open challenges and continue building upon these foundational experiments.
+</p>
 
-    First real steps: Xanadu's Aurora, the first distributed quantum computer.
 
-    Much remains:
+<h2>Closing: Why I Work on DQC</h2>
 
-        Experiments on actual distributed computations (circuits, quantum walks, MBQC patterns).
+<p>
+  Distributed Quantum Computing isn't just a niche topic. 
+  It's essential if we want to scale quantum computing beyond the limits of single devices.
+  The physical constraints are real, and they won't be solved by squeezing more qubits onto a chip.
+</p>
 
-        Quantum network experiments specifically targeting quantum compute needs, not just QKD.
+<p>
+  DQC forces us to ask hard questions: 
+  How do we coordinate entanglement across distance?
+  How do we distribute algorithms across heterogeneous platforms?
+  How do we rethink hardware and software to support modular, network-aware architectures?
+</p>
 
-        Even short-distance server-to-server demonstrations are urgent and impactful.
+<p>
+  These aren't engineering challenges, they're fundamental questions about what it means to compute in a quantum world.
+  And they're questions we need to answer if we want quantum computing to move from lab demos to real-world impact.
+</p>
 
-<h2>   Closing: Why I Work on DQC </h2>
+<p>
+  That's why I work on DQC.
+  It's one of the few paths forward that can take quantum computing to its next phase.
+</p>
 
-    DQC is essential for real quantum computing at scale.
-
-    It demands solving deep new questions in networking, algorithms, and hardware design.
-
-    It is one of the few ways forward to push quantum computing beyond current limitations.
-</html>
