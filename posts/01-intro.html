@@ -25,83 +25,129 @@
 
 <p>
   Building ever-larger quantum computers by simply adding more qubits into a single device isn't a sustainable strategy. 
-  Let me explain why.
-  
+  Let's look at why: 
+</p>
+<p>
   No matter how small we make qubits, we're up against fundamental physical constraints.
   For instance the "area law" in quantum physics, 
-  suggests that the entanglement entropy (a measure of quantum correlations) of a subsystem scales with the boundary area of the subsystem, not its volume. 
-  This concept was first introduced in the context of black hole thermodynamics by physicists Jacob Bekenstein and Stephen Hawking in the 1970s, who found that the entropy of a black hole is proportional to the area of its event horizon, not its volume. 
-  This implies that as we try to pack more qubits into a single device, the complexity of managing entanglement will grow rapidly (with the surface area of subsystems), making it increasingly difficult to maintain coherent quantum states.
-  This is already a problem in current quantum computers, where achieving fault tolerance in quantum computers requires significant overhead. 
-  Implementing error correction protocols necessitates additional physical qubits to encode a single logical qubit, often increasing the total qubit count by an order of magnitude or more. 
-  This not only exacerbates the spatial constraints but also introduces additional complexity in qubit control and coherence maintenance.
-  We will reach a point where adding more qubits to a single device will yield diminishing returns, if not outright failure, due to the inability to manage the entanglement and coherence of these incredibly complex systems.
+  suggests that the entanglement entropy (a measure of quantum correlations) of a subsystem scales with the boundary area of the subsystem. 
+  This concept was first introduced in the context of black hole thermodynamics by physicists Jacob Bekenstein and Stephen Hawking in the 1970s, who found that the entropy of a black hole is proportional to the area of its event horizon. 
+  Implying that as we try to pack more qubits into a single device, the complexity of managing entanglement will grow rapidly (with the surface area of subsystems), making it increasingly difficult to maintain coherent quantum states.
+  
+  Decoherence is already a huge problem in current quantum computers, where achieving fault tolerance requires significant overhead - the entire field of QEC (Quantum Error Correction), was built to fight these errors. 
+  QEC tries to manipulate quantum objects, which are inherently fragile and sensitive to their environment.
+  Implementing error correction protocols necessitates additional physical qubits to encode a single logical qubit, increasing the total qubit counts. 
+  This exacerbates the spatial constraints and introduces additional complexity in qubit control and coherence maintenance.
+  We expect to reach a point where adding more qubits to a single device will yield diminishing returns, if not outright failure, due to the inability to manage the entanglement and coherence of these incredibly complex systems.
+  Building wide forever is not viable, we must build tall, distributing computations across multiple devices, allowing us to scale up without hitting these physical limits.
 </p>
 
 <p>
   These challenges are reminiscent of the obstacles faced in classical computing during the late 20th century. 
-  In the late 20th century, classical computers were hitting real limits.
-  Moore's law kept pushing the number of transistors up, but at some point, simply packing more into a chip caused too much heat and reliability issues.
-  Processors started to run into both physical limits (how small you can make features) and thermal limits (how hot the chip gets).
+  In the late 20th century, classical computers hit expected physical limits - similar to the ones we are predicting in the quantum world.
+  Moore's law kept pushing the number of transistors up, but at some point, packing more into a chip caused too much heat and reliability issues.
+  Processors started to run into both physical limits (how small you can make features) and thermal limits (how hot the chips get).
   
   By the 1980s and 1990s, it became clear that scaling a single processor indefinitely wasn't going to work.
   Clock speeds stopped rising dramatically after the early 2000s because of these heat and power problems.
-  Instead, people started adding multiple processors and building distributed systems.
+  So we stopped building wide, and started building tall.
+  People started working with multiple processors and building distributed systems.
+  Instead of making one super-powerful chip, we started connecting lots of smaller chips together.
+  Thus avoiding the physical limits of single-chip designs, whilst still growing system size and performance.
   This is how concepts like cluster computing, parallel computing, and eventually cloud computing took off.
   Instead of making one super-powerful chip, we started connecting lots of smaller chips together.
   
   Famous early examples include Beowulf clusters (mid-1990s) for scientific computing, and Google's early distributed file systems and computing frameworks (like MapReduce, early 2000s) for handling web-scale data.
   
-  The key was:
-  When scaling one machine hit a wall, we changed the architecture.
-  We networked machines, distributed the workloads, and let many processors work together.
+  The key takeaway from the classical distributed world beginings was:
+  When scaling one machine hit a wall, we change the architecture.
+  We network machines, distribute the workloads, and let many processors work together.
   
-  Quantum computing today faces a very similar moment.
-  Except the rules of the game are even weirder, because quantum information behaves very differently from classical bits.
+  The bells are pointing to a similar moment in quantum computing. 
+  Except this time the rules of the game are even weirder.
+  Quantum parallelism, entanglement, and superposition are not just fancy tricks to make things faster.
+  They are the very fabric of quantum computing.
+  And how they will behave in a set distributed open quantum systems (because afterall this is what quantum computers really are: open quantum systems) is a fascinating open question, that I hope to convince you is worth pursuing.
 </p>
 
 <h2> A Proven Classical Solution: Networks </h2>
 
 <p> 
-  In classical systems, when we network machines, we just move bits around.
-  Simple zeros and ones.
+  In classical systems, when we network machines, we move bits around.
   You send them, store them, copy them.
   No drama.
+  You just need to make sure your own logic doesn't eat its tale: avoid deadlocks, make sure you don't send the same bit twice, don't mess up your own cache, etc.
+  Some incredibly fancy protocols have been developed to ensure it all goes smoothly.
+  Take a graduate distributed systems course will walk you through the basics.
+  And although you will grind your teeth as you learn about Paxos, Raft, and other consensus algorithms, you will eventually get the hack of it and know what problems to look out for (there is many, but they often come in the same shapes).
   
-  In quantum systems, things get complicated fast.
-  Qubits can exist in superpositions.
-  They can be entangled across different nodes.
-  They are fragile.
-  You cannot just "read" a qubit and resend it without destroying it.
-  Copying quantum information is literally forbidden by physics (the no-cloning theorem, Wootters and Zurek, 1982 Phys. Rev. D).
-  
-  This means that in quantum networks, we are not just moving information around.
-  We are moving correlations around.
-  Sometimes without even knowing their exact values.
-  
-  The qubits we use inside the computers are the same kind we need to connect across computers.
-  They live inside and outside the machines at the same time.
-  
-  Because of that, quantum networks are fundamentally different from classical ones.
-  Not just an engineering problem.
-  A whole new layer of physics to deal with.
+  On the other hand quantum systems, bring their own additional problems.
+  Qubits can exist in superpositions. The game is no longer about dealing with combinations of zeros and ones, now we are working with physical states, that are arguably some of the most complex objects in the universe.
+  They can be entangled across different nodes. We can now move bits around (if we work with photons for instance), AND we create additional correlations!
+  The fancy teleportation lingo comes with a new onset of headache inducing problems.
+  Also atop of gaining new power plays we lose some, you cannot just "read" a qubit and resend it without destroying it.
+  Copying quantum information is forbidden(no-cloning theorem, Wootters and Zurek, 1982 Phys. Rev. D).
+  We now get to move correlatons around, but we can't look at them.
+
+  Because of this, networked quantum computing brings along fundamentally different problems from classical networked computing.
+  This is not just an engineering problem.
+  We have to deal with a whole new layer of physics we hadn't considered before.
 </p>
 
-<h2>  New Quantum-Specific Questions </h2>
+<h2>New Quantum-Specific Questions</h2>
 
-    Connecting quantum computers raises fresh challenges:
+<p>
+  What are the truly new challenges introduced by distributed quantum computing? 
+  We can start with implementation-level concerns, which largely fall into two categories: <em>when</em> to connect machines, and <em>how</em> to do it.
+</p>
 
-        When do we connect machines?
+<ul>
+  <li>
+    <strong>When should we connect quantum machines?</strong> 
+    Not all quantum computations benefit from distribution. 
+    The overhead of inter-device communication and coordination can easily outweigh the advantages.
+    In fact, there is growing evidence that highly entangled regions of a quantum system are particularly fragile when partitioned, some may decohere beyond repair if distributed improperly.
+    Identifying when distribution is beneficial, and when it is detrimental, remains an open question.
+  </li>
+  <li>
+    <strong>Classical, Quantum or Hybrid networks?</strong> 
+    Distributed quantum computing doesn't just involve quantum processors, it also requires networks.
+    These networks can be classical (like fiber optics) or quantum (like photonic links).
+    Each type of channel has its own set of advantages and disadvantages.
+    Choosing between classical and quantum channels is a critical design decision.
+    Classical communication is robust and well-understood, but only quantum links allow for entanglement distribution and teleportation.
+    Each choice has trade-offs in terms of latency, fidelity, scalability, and error sensitivity.
+    Understanding these trade-offs, and learning when to use which is still an active research area.
+    For now most work has focused on trying to distribute outright, now on how this channel choice affects the computation.
+  </li>
+</ul>
 
-        Why and how do we choose classical vs quantum connections?
 
 <h2>  Parallelism: Lessons and Differences </h2>
 
-    Classical parallelism gives speedups beyond "fitting things" (reference Amdahl's and Gustafson's laws).
+<p>
+  One of the other motivations behind classical distributed computing was the discovery of performance speedups through parallelism. 
+  As early as the 1970s, Amdahl's Law formalized the limits of speedup in a system with a fixed sequential fraction, while Gustafson’s Law in the 1980s reframed the problem for scaled workloads, showing that as we increase problem size, more of it can be parallelized. 
+  These insights partially justified the shift to multi-core architectures and distributed systems, even when communication overhead was non-trivial.
+</p>
 
-    Quantum computers already have inherent parallelism via superposition and entanglement.
+<p>
+  Quantum computing, however, doesn’t present parallelism in the same way as classical systems. 
+  Superposition and entanglement give quantum systems a kind of inherent parallelism. You'll often here the simplification that quantum parallelism give sus exponentially many computational paths encoded in a single state. 
+  But this is not true, quantum parallelism is not directly accessible: we cannot observe all paths simultaneously, nor can we arbitrarily manipulate individual branches.
+  Also unlike classical computers, quantum computer can perform operations on distinct qubits at the same time. 
+  Operational parallelism is inherent to the model.
+  This makes it hard to argue for speedup via distribution in the same terms as classical parallelism.
+  In fact, we currently expect the opposite to be true: distributing a quantum computation can introduce additional overhead, such as the need for error correction, qubit teleportation, and other forms of communication that can slow down the computation.
+</p>
 
-    Still, distributed quantum computing could bring new forms of speedups — how and why are still open questions.
+<p>
+  Still, it is not typical of scientists to despair this easly.
+  If you were to ask me, one of the many early in career researcher who are dedicating their PhD to this field, I believe (not without supporting evidence)
+  that distributed quantum computing will offer new kinds of speedup: not by splitting work across nodes in the classical sense, but by allowing more complex entangled systems, enabling new types of measurements, or increasing algorithmic diversity through heterogeneity of nodes.
+  When and how these speedups manifest is still poorly understood - ergo why we are eagerly working on it. 
+</p>
+
 
 <h2>  Infrastructure Challenges </h2>
 
