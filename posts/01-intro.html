@@ -8,7 +8,7 @@
 <body>
   <article>
     <h1>Why am I working on Distributed Quantum Computing (DQC)?</h1>
-    <p><em>May 2025</em></p>
+    <p><em>1st of May 2025</em></p>
 
     <p>
       Distributed Quantum Computing (DQC) offers a promising path to scale quantum capabilities beyond the limitations of single devices.
@@ -39,7 +39,9 @@
   Implementing error correction protocols necessitates additional physical qubits to encode a single logical qubit, increasing the total qubit counts. 
   This exacerbates the spatial constraints and introduces additional complexity in qubit control and coherence maintenance.
   We expect to reach a point where adding more qubits to a single device will yield diminishing returns, if not outright failure, due to the inability to manage the entanglement and coherence of these incredibly complex systems.
-  Building wide forever is not viable, we must build tall, distributing computations across multiple devices, allowing us to scale up without hitting these physical limits.
+  Building wide forever is not viable. 
+  Instead, we must build tall, that is, distribute computations across multiple devices rather than growing a single one indefinitely. 
+  This shift allows us to scale without hitting the physical limits imposed by coherence, control, and space.
 </p>
 
 <p>
@@ -76,20 +78,20 @@
   In classical systems, when we network machines, we move bits around.
   You send them, store them, copy them.
   No drama.
-  You just need to make sure your own logic doesn't eat its tale: avoid deadlocks, make sure you don't send the same bit twice, don't mess up your own cache, etc.
+  You just need to make sure your own logic doesn't eat its tale: avoid deadlocks, prevent sending the same bit twice, maintain cache consistency, etc.
   Some incredibly fancy protocols have been developed to ensure it all goes smoothly.
   Take a graduate distributed systems course will walk you through the basics.
-  And although you will grind your teeth as you learn about Paxos, Raft, and other consensus algorithms, you will eventually get the hack of it and know what problems to look out for (there is many, but they often come in the same shapes).
+  And although you will grind your teeth as you learn about Paxos, Raft, and other consenusalgorithms, you will eventually get thehang of it and know what problems to look out for (there is many, but they often come in the same shapes).
   
   On the other hand quantum systems, bring their own additional problems.
   Qubits can exist in superpositions. The game is no longer about dealing with combinations of zeros and ones, now we are working with physical states, that are arguably some of the most complex objects in the universe.
   They can be entangled across different nodes. We can now move bits around (if we work with photons for instance), AND we create additional correlations!
   The fancy teleportation lingo comes with a new onset of headache inducing problems.
   Also atop of gaining new power plays we lose some, you cannot just "read" a qubit and resend it without destroying it.
-  Copying quantum information is forbidden(no-cloning theorem, Wootters and Zurek, 1982 Phys. Rev. D).
-  We now get to move correlatons around, but we can't look at them.
+  Copying quantum information is forbidden (no-cloning theorem, Wootters and Zurek, 1982 Phys. Rev. D).
+  We can move correlations around, but we can’t observe or copy them.
 
-  Because of this, networked quantum computing brings along fundamentally different problems from classical networked computing.
+  Because of this, networked quantum computingintroduces fundamentally different problems from classical networked computing.
   This is not just an engineering problem.
   We have to deal with a whole new layer of physics we hadn't considered before.
 </p>
@@ -118,7 +120,7 @@
     Classical communication is robust and well-understood, but only quantum links allow for entanglement distribution and teleportation.
     Each choice has trade-offs in terms of latency, fidelity, scalability, and error sensitivity.
     Understanding these trade-offs, and learning when to use which is still an active research area.
-    For now most work has focused on trying to distribute outright, now on how this channel choice affects the computation.
+    For now most work has focused on trying to distribute outright, not on how this channel choice affects the computation.
   </li>
 </ul>
 
@@ -133,7 +135,7 @@
 
 <p>
   Quantum computing, however, doesn't present parallelism in the same way as classical systems. 
-  Superposition and entanglement give quantum systems a kind of inherent parallelism. You'll often here the simplification that quantum parallelism give sus exponentially many computational paths encoded in a single state. 
+  Superposition and entanglement give quantum systems a kind of inherent parallelism. You'll often here the simplification that quantum parallelism give usexponentially many computational paths encoded in a single state. 
   But this is not true, quantum parallelism is not directly accessible: we cannot observe all paths simultaneously, nor can we arbitrarily manipulate individual branches.
   Also unlike classical computers, quantum computer can perform operations on distinct qubits at the same time. 
   Operational parallelism is inherent to the model.
@@ -142,7 +144,7 @@
 </p>
 
 <p>
-  Still, it is not typical of scientists to despair this easly.
+  Still, scientists are not easily discouraged.
   If you were to ask me, one of the many early in career researcher who are dedicating their PhD to this field, I believe (not without supporting evidence)
   that distributed quantum computing will offer new kinds of speedup: not by splitting work across nodes in the classical sense, but by allowing more complex entangled systems, enabling new types of measurements, or increasing algorithmic diversity through heterogeneity of nodes.
   When and how these speedups manifest is still poorly understood - ergo why we are eagerly working on it. 
@@ -216,8 +218,8 @@
 
 <p>
   Many quantum platforms (especially superconducting qubits) were not built with quantum networking in mind.
-  They're great for local, high-fidelity gates and fast control, but they can't directly emit or absorb flying qubits like photons.
-  To interface with a quantum network, they need an interconnect: a device that converts stationary qubits into photonic ones.
+  They're excellent for local, high-fidelity gates and fast control, but they cannot natively emit or absorb flying qubits like photons.
+  To interface with a quantum network, superconducting qubits require an interconnect, a device that converts stationary qubits into photonic ones, typically via microwave-to-optical transduction (e.g., using resonators). 
   These interconnects are still in early stages.
   They introduce unavoidable losses, noise, and latency.
   The fidelity hit is significant, and the success rates for conversion remain low.
