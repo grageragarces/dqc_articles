@@ -51,7 +51,7 @@
 
 <p>
   These challenges are reminiscent of the obstacles faced in classical computing during the late 20th century. 
-  In the late 20th century, classical computers hit expected physical limits - similar to the ones we are predicting in the quantum world.
+  In the late 20th century, classical computers hit expected physical limits, similar to the ones we are predicting in the quantum world.
   Moore's law kept pushing the number of transistors up, but at some point, packing more into a chip caused too much heat and reliability issues.
   Processors started to run into both physical limits (how small you can make features) and thermal limits (how hot the chips get).
   
@@ -60,16 +60,17 @@
   So we stopped building wide, and started building tall.
   People started working with multiple processors and building distributed systems.
   Instead of making one super-powerful chip, we started connecting lots of smaller chips together.
-  Thus avoiding the physical limits of single-chip designs, whilst still growing system size and performance.
+  Thus, avoiding the physical limits of single-chip designs, whilst still growing system size and performance.
   This is how concepts like cluster computing, parallel computing, and eventually cloud computing took off.
   Instead of making one super-powerful chip, we started connecting lots of smaller chips together.
   
   Famous early examples include Beowulf clusters (mid-1990s) for scientific computing, and Google's early distributed file systems and computing frameworks (like MapReduce, early 2000s) for handling web-scale data.
   
   The key takeaway from the classical distributed world beginings was:
-  When scaling one machine hit a wall, we change the architecture.
-  We network machines, distribute the workloads, and let many processors work together.
-  
+  When scaling one machine hits a wall, we have to change the architecture:
+  we network machines, distribute the workloads, and let many processors work together.
+</p>
+<p>
   The bells are pointing to a similar moment in quantum computing. 
   Except this time the rules of the game are even weirder.
   Quantum parallelism, entanglement, and superposition are not just fancy tricks to make things faster.
@@ -86,14 +87,20 @@
   And although you may grind your teeth while learning about Paxos, Raft, and other consensus algorithms, you eventually get the hang of it. You learn what kinds of problems to expect. 
   There are many, but they tend to follow familiar patterns. 
 </p> 
-<p> Quantum systems, on the other hand, introduce a different class of challenges. Qubits can exist in superpositions. 
-    We are no longer dealing with combinations of zeros and ones, but with physical states, arguably some of the most complex objects in the universe. These states can be entangled across nodes. 
-    Not only can we move bits (for example, using photons), but we can also move correlations. 
-    Quantum teleportation opens the door to new capabilities, but it also introduces a host of new, headache-inducing problems. 
-</p> 
+
+<p>
+  Quantum systems, on the other hand, introduce a different class of challenges.  
+  Qubits can exist in superpositions.  
+  We are no longer dealing with combinations of zeros and ones, but with physical states—arguably some of the most complex objects in the universe.  
+  These states can be entangled across nodes.  
+  Not only can we move bits (for example, using photons), but we can now also move correlations.  
+  Quantum teleportation opens a window to new capabilities, but it also brings a host of new, headache-inducing problems.
+</p>
+
 <p> Alongside these new power plays, we lose some familiar ones. 
+    A window may open, but a door closes.
     You cannot simply read a qubit and resend it without destroying it. 
-    Copying quantum information is impossible (see the no-cloning theorem, Wootters and Zurek, 1982, Phys. Rev. D). 
+    Copying quantum information is impossible (no-cloning theorem). 
     We can move correlations between systems, but we cannot directly observe or duplicate them. 
     As a result, networked quantum computing introduces fundamentally different challenges from classical networked computing. 
     This is not just an engineering problem. 
@@ -217,7 +224,7 @@
 <p>
   Many quantum platforms (especially superconducting qubits) were not built with quantum networking in mind.
   They're excellent for local, high-fidelity gates and fast control, but they cannot natively emit or absorb flying qubits like photons.
-  To interface with a quantum network, superconducting qubits require an interconnect, a device that converts stationary qubits into photonic ones, typically via microwave-to-optical transduction (e.g., using resonators). 
+  To interface with a quantum network, these qubits require an interconnect, a device that converts stationary qubits into photonic ones, typically via microwave-to-optical transduction (e.g., using resonators). 
   These interconnects are still in early stages.
   They introduce unavoidable losses, noise, and latency.
   The fidelity hit is significant, and the success rates for conversion remain low.
@@ -232,7 +239,7 @@
 
 <p>
   But despite this bleak state, the first real steps toward distributed quantum computing have been arriving!
-  In early 2025, Xanadu introduced <strong>Aurora</strong> — the first modular, networked photonic quantum computer.
+  In early 2025, Xanadu introduced <strong>Aurora</strong>, the first modular, networked photonic quantum computer.
   Aurora connects 35 photonic chips via 13 kilometers of optical fiber across four server racks, forming a 12-qubit system designed for scalability and fault tolerance.
   This marks the first time a quantum computer has been built to be modular, networked, and truly scalable with quantum channels.
   And although it is still in the early stages, it represents a significant step toward a future where quantum computers can be distributed across multiple locations and connected via quantum networks.
@@ -245,7 +252,7 @@
 </p>
 
 <p>
-  Another major development came from TU Delft, where researchers at QuTech and the Quantum Internet Alliance introduced <em>QNodeOS</em> — the first operating system for quantum networks.
+  Another major development came from TU Delft, where researchers at QuTech and the Quantum Internet Alliance introduced <em>QNodeOS</em>, the first operating system for quantum networks.
   QNodeOS provides a hardware-agnostic abstraction layer, letting quantum applications issue high-level commands like entanglement generation or inter-node operations without being tied to specific devices.
   These requests are translated into hardware-specific instructions that coordinate timing, entanglement, and classical messaging between nodes.
   However, the system still assumes that each node runs gate-based quantum circuits.
@@ -275,7 +282,7 @@
 </p>
 
 
-<h2>Closing: Why work in DQC?</h2>
+<h2>Closing: Why work on DQC?</h2>
 
 <p>
   Distributed Quantum Computing isn't just a niche topic. 
