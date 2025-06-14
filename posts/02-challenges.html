@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The Challenge at the Heart of Distributed Quantum Computing</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <article>
+    <h1>The Challenge at the Heart of Distributed Quantum Computing</h1>
+    <p><em>15th of June 2025</em></p>
+
+    <p>
+      Abstract
+    </p>
+
+    <p><a href="../index.html">← Back to all posts</a></p>
+  </article>
+</body>
+
+<p>
+    Distributed Quantum Computing (DQC) is emerging as a necessary strategy to overcome physical limits in scaling up quantum devices. 
+    Instead of building ever-larger monolithic machines, we explore architectures composed of smaller quantum processors connected by quantum or classical links. 
+    But distributing quantum computations introduces deep challenges—physical, architectural, and algorithmic—that go beyond classical distributed systems.
+</p>
+
+<p>
+    At the heart of DQC lies a fundamental question: how do we enable coherent computation across separate quantum processing units? 
+    Unlike classical systems, quantum mechanics imposes strict constraints: no-cloning, entanglement fragility, and measurement collapse. 
+    The challenge isn’t just technical—it’s conceptual. What does a “distributed” quantum computation mean when information can’t be freely copied or buffered?
+</p>
+
+<p>
+    One major challenge is dealing with errors at scale. 
+    Should we encode the entire distributed system using a global quantum error correction code like qLDPC, 
+    or use a modular approach such as local surface code patches stitched together via teleportation or lattice surgery? 
+    The trade-off between global encoding efficiency and local modularity affects fault tolerance, control complexity, and hardware feasibility.
+</p>
+
+<p>
+    Another challenge is network composability. 
+    Swapping a quantum link for a classical one (e.g., via measurement and feedforward) has intrinsic costs: latency, decoherence, and potential fidelity loss. 
+    Understanding the operational cost of hybrid links—and their impact on algorithm runtime and reliability—is essential. Can we still compose systems in a modular way without breaking the quantum advantages?
+</p>
+
+<p>
+    Architectural parallelism raises the question: can distributed quantum systems offer speedups through physical parallelism alone, regardless of the algorithm used? 
+    In classical systems, architecture-driven parallelism has enabled huge gains. Will quantum networks offer similar benefits, 
+    or must quantum algorithms be explicitly restructured to exploit network-imposed parallelism?
+</p>
+
+<p>
+    All these challenges converge in the design of quantum algorithms. 
+    Some workloads are inherently centralised and resist partitioning. 
+    Others may be reformulated to match distributed constraints, trading depth for width or qubits for communication. 
+    What makes an algorithm “distributable” at scale? 
+    Designing or compiling quantum workloads to exploit locality and tolerate inter-device noise is still an open question.
+</p>
+
+<p>
+    In future posts, I’ll delve into methods to analyse and rewrite quantum circuits for distribution. 
+    I’ll also introduce tools like Hybrid Dependency Hypergraphs (HDHs), which help expose which parts of a computation are truly local, 
+    which depend on network coordination, and where classical-quantum boundaries matter. 
+    This is where DQC becomes not just a hardware problem, but a compiler and design problem too.
+</p>
