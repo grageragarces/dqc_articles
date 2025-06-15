@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>The Challenge at the Heart of Distributed Quantum Computing</title>
+  <title>The Theoretical Computer Science Roadblocks behind DQC</title>
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
   <article>
-    <h1>The Challenge at the Heart of Distributed Quantum Computing</h1>
+    <h1>The Theoretical Computer Science Roadblocks behind DQC</h1>
     <p><em>15th of June 2025</em></p>
 
     <p>
-      Abstract
+     Distributed Quantum Computing (DQC) is emerging as a necessary response to the physical limits of scaling quantum hardware. 
+     But beyond the engineering and physics challenges lies a deeper set of theoretical computer science problems. 
+     This post explores key barriers to distributing quantum computation across multiple devices, including how we model and mitigate communication noise, 
+     formalize hybrid classical-quantum coordination, and decompose quantum workloads algorithmically and structurally. 
+     From algorithm-level partitioning to model-level abstraction, 
+     DQC forces us to rethink core computational assumptions—making it not just a hardware problem, but a fundamentally new class of computing problem.
     </p>
 
     <p><a href="../index.html">← Back to all posts</a></p>
@@ -19,47 +24,146 @@
 </body>
 
 <p>
-    Distributed Quantum Computing (DQC) is emerging as a necessary strategy to overcome physical limits in scaling up quantum devices. 
-    Instead of building ever-larger monolithic machines, we explore architectures composed of smaller quantum processors connected by quantum or classical links. 
-    But distributing quantum computations introduces deep challenges—physical, architectural, and algorithmic—that go beyond classical distributed systems.
+    Distributed Quantum Computing (DQC) is not just a near-term workaround, it's a long-term necessity. 
+    Practical physical constraints such as decoherence, gate errors, and crosstalk place strict limits on how large a single quantum processor can be, 
+    i.e. how many qubits we can fit into one chip. 
+    Given the excessive physical qubit requirements needed for error correction and the implementation of useful algorithms, 
+    we are exploring distributed architectures: networks of quantum processors coordinated to act as one. 
+    This relatively recent shift in the quantum landscape has opened up a host of new challenges. 
+    In this blog post, I intend to walk you through some of the most important theoretical issues that have arisen in the wake of DQC, ranging from error fragility to temporal coordination and algorithmic decomposability. 
+    We'll map the nooks and crannies of the DQC problem space, where physics, architecture, and computation collide.
 </p>
 
 <p>
-    At the heart of DQC lies a fundamental question: how do we enable coherent computation across separate quantum processing units? 
-    Unlike classical systems, quantum mechanics imposes strict constraints: no-cloning, entanglement fragility, and measurement collapse. 
-    The challenge isn’t just technical—it’s conceptual. What does a “distributed” quantum computation mean when information can’t be freely copied or buffered?
+    So the main question we're facing is:  
+    How do we connect and coordinate multiple quantum devices, possibly alongside classical devices,  
+    so they can collaborate on a task they couldn't solve individually due to physical constraints?  
+
+    As you might expect, there is no straightforward answer.  
+    For one, we're (or at least may be) dealing with two kinds of devices, quantum and classical, and two kinds of channels, again quantum and classical.  
+    That gives us a combinatorial mess of interactions: quantum computers communicating over quantum links, over classical links, interacting with classical processors, and all the hybrid setups in between.  
+    Let's also not forget what we're trying to send around: fragile quantum information.  
+
+    Qubits have short lifetimes, their error tolerance is pretty poor, and coherent control is still noisy and slow.  
+    Worse still, we're not just trying to manipulate them, we're trying to fly them across a network and use them at the other end.  
+    To make things even trickier, that's just hardware; believe me, the software end of the stick doesn't help either.  
+    We have maybe ten quantum algorithms that are practically useful today.  
+
+    Most quantum toolkits are still in their infancy, and we're only beginning to build the foundational layers of the quantum software stack.  
+    Robust languages, compilers, and coordination protocols? Not there yet. Probably not close to be honest.  
+    On top of all that, DQC adds yet another layer to this barely functional stack.  
+    Can we really cope with the added complexity?  
+    How will we achieve interoperability across devices, vendors, and platforms?  
+    Let's take a deep breath and dive into some of these issues in more detail.
+</p>
+
+<h2> The Error Problem </h2>
+<p>
+    The first horse of our apocalypse has been tormenting the monolithic world (those normies working on single quantum devices) for decades now: errors!  
+    Errors, errors, errors...  
+    If something is capable of driving this field into the ground, it will be errors.  
+    We have an entire field, arguably two (error correction and error mitigation), purely designed for fighting them.  
+    Entire careers have been built around fixing the swifty quantum errors, many more will follow.  
+
+    With DQC, we now get to ask these poor mathematicians and computer scientists who have been struggling to fix errors on a single device for decades:  
+    How should we fix errors at a network scale?  
+    Do we design a global error correction code like qLDPC for our entire system?  
+    Do we use a modular approach, stitching together local surface code patches via teleportation or lattice surgery?  
+    How do we balance the trade-off between global encoding efficiency and local modularity in networks that may have variant use of individual devices?  
+
+    The answer? We don't know, and frankly we've barely started to scratch the surface.  
+    Any Uni of Edinburgh error correction PhD student has been pursued by me to look into this - I recently caught one, stay tuned for future work in the error correction space ;).  
+
+    But back to business: we don't know what the DQC-EC world is going to look like.  
+    What we do know is what the DQC-error landscape looks like.  
+    The current status, as you might expect, is that individual device noise is not the problem, but communication noise is.  
+    Sure, individual devices may be noisy to unusable levels, but their individual noise is laughable compared to their interconnected counterpart.  
+
+    <i>Quantum Data Centres: A Simulation-Based Comparative Noise Analysis</i> by Kenneth Campbell, et al. would be a good further reading on this.  
+    But the TLDR is that communication is — and will be — the bottleneck of error correction and mitigation in DQC.  
+    That's what we should focus on.  
+    Figuring out how to fly qubits around without destroying all the useful information they carry.
+</p>
+
+<h2> The Composition Problem </h2>
+<p>
+    Next, we've got the network composability problem.  
+    As I mentioned earlier, two technologies, two applications, way too many permutations.  
+    We know that "simulating" a quantum link over a classical one (aka probabilistically decomposing the channel) is quite expensive.  
+    It's a short-term solution to interconnect devices whilst we resolve physical mobility limitations for qubit technologies that 
+    don't directly interface with photons and require interconnects, and a placeholder to the error issue.  
+
+    But when it comes down to quantifying how bad it is, beyond just the re-shot cost, answers get murky.  
+    We, or at least I, don't know.  
+    So the question remains: can we compose systems through this dual network option without breaking the system?  
+    Will there ever be a viable hybrid solution where sometimes we can use cheaper classical channels at the expense of other resources?
+</p>
+
+<h2> The Beyond-Necessity Problem </h2>
+<p> 
+    Parallelism speedup is another one that I am particularly interested in.  
+    In the classical world, a big driver of why we started building distributed systems was the benefits offered by parallelised algorithms (algorithms designed to run multiple operations on various devices such that the overall execution time is reduced).  
+    But quantum computers have a sort of "native" parallelism: multiple qubits can be manipulated simultaneously.  
+    So no real parallelism is offered by a network; within one device we can already perform various operations.  
+    Of course, the fidelity at which we can perform these operations or the number of them might be limited, but really that limit is the qubit limit,   
+    aka the reasoning that we distribute quantum computation because we can't fit it in one device.  
+    Still, could there be other reasons to do that?
+</p>
+
+<h2> The Compilation Problem </h2>
+<p>
+    Another big question is: How do we design or compile quantum workloads in a distributed setting?  
+    I think there are four main levels at which we can look at this question: the problem, the algorithm, the subroutine, and the model.  
+    <br><br>
+
+    1) <strong>Problem</strong> → There are a few problems that are supposedly well suited to quantum computers, i.e., we think QCs will provide some sort of advantage or speedup in solving them over classical computers.  
+    An easy one to reason about is Hamiltonian simulation (in many quantum devices it can be emulated),  
+    but others exist: unstructured search, optimization problems, the hidden subgroup problem, linear equations, etc.  
+    At this level, the current approach is somewhat straightforward: we cut up the problem space into local problems.  
+    Think of a Hamiltonian: here you would partition its problem space into local Hamiltonians that can be solved on individual devices  
+    and look at how these local Hamiltonians interact with each other across the evolution of the problem.  
+    These interactions would be mapped to communication Hamiltonians, which are run as teleportation protocols over the connective channels,  
+    making the total Hamiltonian = sum of local Hamiltonians + sum of communication Hamiltonians.  
+    <br><br>
+
+    2) <strong>Algorithm</strong> → Next, we look at the algorithms being used to solve these quantum problems.   
+    This would be your Grover, Shor, QAOA, Trotterization, etc.  
+    Some of these are starting to get distributed variants.    
+    The idea is to take a global function <em>f</em> and decompose it into 2<sup>k</sup> sub-functions <em>f<sub>i</sub></em>, each defined over a reduced input space {0,1}<sup>n−k</sup>.  
+    You then run many quantum circuits in parallel, each searching a different subspace.  
+    This distributes both the memory requirement and the query load, allowing each node to operate on (n−k) qubits instead of the full input.
+    <br><br>
+
+    3) <strong>Subroutine</strong> → Bellow most quantum algorithms there are subroutines, which you can think of as "reusable" components across various algorithms.  
+    Things like VQE, QFT, state preparation, oracles...  
+    Distributing subroutines looks similar to the algorithm and problem levels.
+    Often they are solved through them.  
+    The general idea is once again the decomposition of the subroutine into local and communication components,  
+    which are driven by a cost function and mixing operators such that variational parameters are updated.  
+    By updates I mean that an initial run of the cut-up system is executed, read, and the classical result injects the new initialization for the next run.  
+    <br><br>
+
+    4) <strong>Model</strong> → Finally, the model level is the only truly "flexible level", meaning it should allow for distribution of any workload.  
+    Various theoretical and implemented quantum computational models exist today: quantum circuits, measurement-based quantum computing, quantum walks, boson sampling, etc.  
+    At this step, operations are abstracted into connected nodes where connections represent sections of the workload that can be replaced with 
+    communication primitives if they are run over various devices.  
+    These primitives are in essence small quantum circuits that ensure the teleportation of the qubit(s) or the implementation of a non-local quantum 
+    gate over two devices.  
+    Post-abstraction, the graph (or hypergraph, if you are working with a model that has qubit operations with more than two qubits) is cut up, it 
+    basically boils down to a graph partitioning problem (spoiler alert: NP-hard).
+</p>
+
+<h2> Closing Thoughts: DQC’s Theoretical Frontier </h2>
+<p>
+    So far, we've looked at the mess of challenges that show up the moment you try to stretch quantum computation beyond a single chip-errors, links, timing, algorithms, abstractions.  
+    These aren't small tweaks; they force us to rethink what computation looks like when it's not confined to one box.  
+    In future posts, I'll dig into what it means to actually transform circuits for distribution: which cuts are cheap, which ones break things, and how to track the cost of coordination.  
+    Dwelving into how DQC is not just a hardware problem, but a compiler and design problem too.
 </p>
 
 <p>
-    One major challenge is dealing with errors at scale. 
-    Should we encode the entire distributed system using a global quantum error correction code like qLDPC, 
-    or use a modular approach such as local surface code patches stitched together via teleportation or lattice surgery? 
-    The trade-off between global encoding efficiency and local modularity affects fault tolerance, control complexity, and hardware feasibility.
-</p>
-
-<p>
-    Another challenge is network composability. 
-    Swapping a quantum link for a classical one (e.g., via measurement and feedforward) has intrinsic costs: latency, decoherence, and potential fidelity loss. 
-    Understanding the operational cost of hybrid links—and their impact on algorithm runtime and reliability—is essential. Can we still compose systems in a modular way without breaking the quantum advantages?
-</p>
-
-<p>
-    Architectural parallelism raises the question: can distributed quantum systems offer speedups through physical parallelism alone, regardless of the algorithm used? 
-    In classical systems, architecture-driven parallelism has enabled huge gains. Will quantum networks offer similar benefits, 
-    or must quantum algorithms be explicitly restructured to exploit network-imposed parallelism?
-</p>
-
-<p>
-    All these challenges converge in the design of quantum algorithms. 
-    Some workloads are inherently centralised and resist partitioning. 
-    Others may be reformulated to match distributed constraints, trading depth for width or qubits for communication. 
-    What makes an algorithm “distributable” at scale? 
-    Designing or compiling quantum workloads to exploit locality and tolerate inter-device noise is still an open question.
-</p>
-
-<p>
-    In future posts, I’ll delve into methods to analyse and rewrite quantum circuits for distribution. 
-    I’ll also introduce tools like Hybrid Dependency Hypergraphs (HDHs), which help expose which parts of a computation are truly local, 
-    which depend on network coordination, and where classical-quantum boundaries matter. 
-    This is where DQC becomes not just a hardware problem, but a compiler and design problem too.
+  <strong>PS</strong>: I'll be giving a short talk on these issues at FQC 2025 this week.  
+  You can find my slides here:  
+  <a href="https://github.com/grageragarces/Presentations/blob/main/DQC%20the%205%20minute%20blitz.pptx" target="_blank">DQC: The 5 Minute Blitz (slides)</a>.  
+  They might be useful to illustrate some of the ideas described in this text.
 </p>
