@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Why Quantum Distribution Is Not Just Classical Networking 2.0?</title>
+  <link rel="stylesheet" href="../style.css" />
+
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+  <article>
+    <h1>Why Quantum Distribution Is Not Just Classical Networking 2.0?</h1>
+    <p><em>16th of July 2025</em></p>
+
+    <p>
+    What makes distributed quantum computing fundamentally different from classical networking? 
+    It's not about faster data, but about distributing quantum correlations. 
+    This post challenges the misleading “quantum internet = internet 2.0” narrative and explores the real physics behind quantum distribution: 
+    from no-cloning and measurement collapse to error propagation, synchronization limits, and non-local state effects. 
+    As we break old assumptions and build new ones, quantum distribution reveals itself not as a network upgrade, but as a whole new computing paradigm.
+    </p>
+
+    <p><a href="../index.html">← Back to all posts</a></p>
+  </article>
+</body>
+</html>
+
+
+<p> 
+    If I say “quantum internet”, you probably think of an upgrade to our current internet. 
+    Faster? Safer perhaps? More reliable? 
+    Something along the lines of “internet everywhere and for everyone all the time” might come to mind.
+    That's the narrative echoed across LinkedIn at least ...
+    Yet after four years in this field, I still don't see the bridge between that idea and the actual reality of quantum internet research.
+
+    To me, the “quantum internet” means something very different:
+    it's about distributing quantum correlations in a network, enabling things like
+    collaborative sensing,
+    atomic clock synchronization,
+    long-distance non-local experiments,
+    quantum cryptography,
+    and maybe one or two more niche technologies.
+
+    Could we one day see quantum networks improve or reshape what we understand as “the internet”?
+    Perhaps. Quantum cryptography is a strong candidate.
+
+    But the misnomer we've created, and keep reinforcing, is a real issue.
+    It fuels a flood of papers proposing new architectures with little regard for the actual physics.
+
+    This blog post aims to dive into what makes distributed quantum computing fundamentally different from a classical networking problem.
+    Because after all new problems, mean new opportunities.
+
+</p>
+
+<h2> The Quantumness aspect </h2>
+
+<p>
+    So what does the Q in DQC entail? 
+    First of all, any quantum computation can be fundamentally thought of as a large quantum state, made up of multiple qubits, correlated amongst themselves. 
+    Every time you implement a CNOT gate between two qubits, you're creating a new correlation between them.
+    At the end of the day, all a quantum circuit does is build a big graph state aka an interconnected network (not in the networking sense) that encodes and processes a problem.
+    A quantum network's job is to distribute this quantum state (which is itself a network) across its nodes, like a matryoshka doll.
+    It IS NOT meant to send data across, but to send correlations across.
+    The difference is important, we will come back to it.
+    For now, let's focus on these correlations, also known as <strong>entanglement</strong>.
+    Our first quantum beast. A quantum state (aka a qubit) is encoded as 
+    \( |\phi\rangle = \alpha |0\rangle + \beta |1\rangle \),
+    with \( \alpha \) and \( \beta \) complex amplitudes such that \( |\alpha|^2 + |\beta|^2 = 1 \).
+    When two qubits are entangled, their joint state becomes indistinguishable:
+    \( |\phi_1\rangle |\phi_2\rangle = \frac{1}{\sqrt{2}} (|00\rangle + |11\rangle) \).
+    One way to create this entangled state is by sending two photons with different polarizations through a beam splitter, letting them interfere, and selecting the cases where they exit in separate paths.
+    There's also such a thing as pseudoentanglement.
+    This occurs when states are correlated in a way that looks like entanglement, but isn't quite.
+    Both entanglement and pseudoentanglement are considered resources for quantum communication.
+    They are things we "burn" when we distribute quantum computations across devices.
+</p>
+
+<p> 
+    Our second beast is the <strong>no-cloning theorem</strong>. 
+    As I said before, the name of the game here is not data transfer. 
+    And the reason is quite sound: we can't copy quantum states.
+    The no-cloning theorem states that it is impossible to create an identical copy of an arbitrary unknown quantum state.
+    In classical networks, data can be freely copied for redundancy or routing.
+    Quantum networks can't do that.
+    No fan-out. No replication. No repeaters as we know them.
+    It's all out the window.
+    Memories are also a problem, although incredibly speedy progress is being made.
+    (This was actually the topic of my first patent: quantum memories for networking, a very exciting and deeply problematic challenge.)
+    Not all is lost tho, data movement can still be helped along with classical crutches.
+    We can forward information if we combine a quantum connection with a classical one, sidestepping the copying issue.
+    It's a simplification, but one I found useful when I first entered the quantum communications world.
+    This is a whole new paradigm, with a whole new set of problems and opportunities.
+    Straightforward classical translations won't always work as the purpose of these communications is simply different:
+    Correlations, correlations, correlations.
+</p>
+
+<p> 
+    Our third beast is a fun one: <strong>measurement collapse</strong>. 
+    Schrödinger's cat is no longer superposed between life and death once we look into the box. 
+    It chooses its state. 
+    It collapses down to one of its two binary values. 
+    It becomes a bit.
+    In the same spirit, when we measure qubits, they collapse into classical outcomes.
+    They can't be copied, and they can't be re-used after being observed.
+    This has a crazy upside: built-in cryptographic detection.
+    You copy -> you kill -> I notice the qubit is gone -> I shut down the compromised communication.
+    A one-tap wonder, if properly executed.
+
+    Measurement collapse is also what enables the classical crutches I mentioned earlier.
+    In the teleportation protocol, classical information obtained from measuring entangled qubits
+    is sent to a receiving party over classical channels.
+    They then apply a correction to their half of the entangled state and recover the original global quantum state.
+    In this way, classical comms can help quantum comms forward information.
+    But teleportation comes at a cost:
+    the entanglement shared between parties is consumed (the qubits have collapsed),
+    and we need at least two classical bits for every qubit teleported.
+    This entanglement must be created ahead of time, distributed, and often purified (distilled).
+    An expensive and fragile process.
+
+</p>
+
+<h2> Local is now Global </h2> <!-- I feel like this paragraph is quite weak and much shorter... what could we add to improve? -->
+
+<p>
+    Because the quantum distribution game is a correlations game,not a data forwarding game, a new reality arises.  
+    The idea of locality can be violated.  
+    A change in one node can instantly affect the entire global quantum state.  
+    This is because distributed quantum systems often maintain entangled states across nodes.  
+
+    In classical computing, local operations affect local memory.  
+    In distributed quantum systems, even a local gate may have non-local effects.  
+    This violates classical assumptions about node independence.  
+    A single phase shift on one qubit can change interference patterns across the entire system.  
+    Fun thing to deal with when your qubits are fragile...
+</p>
+
+<p>
+    Due to this, error propagation becomes a serious challenge.  
+    In classical systems, faults are local, isolated, and often detectable.  
+    But in quantum systems, errors can spread through entanglement.  
+    They can even occur at the level of the entanglement generation and distribution itself.
+    We don't just have to deal with bit flips on individual qubits, but with corrupted correlations.  
+    In this framework, classical fault isolation breaks down.  
+    An error on one node of the global state can trigger a cascade across the system.  
+    This interconnectivity, is the power and the achiles heel of quantum computing.
+    Even simulations are non-trivial when we can't just cut up a large computation into partitions to run them independently.  
+    Unless there were clear un-connected subgraphs in the larger global graph state, cutting up a large graph without interconnecting its partitions would not be equivalent to the original graph.
+</p>
+
+<p>
+    Furthermore synchronization can be quite the issue if not deal with properly.
+    Qubits are fragile things requiring precise timings and control alignements.
+    Even nanosecond-scale timing drift can cause an entangled pair to decohere before it's useful. 
+    Distributed gates require tight control over laser pulses, clocks, and coherence windows.
+</p>
+
+
+<h2>The sun will come out: tomorrow</h2>
+
+<p>
+The good news is that for those of us who missed the original internet boom  
+(we were lazy, waiting to be born and all that), we've got a new round to play.  
+
+This time, the name of the game is correlations.  
+They're fragile, unpredictable, and break down a lot of the convenient architectural assumptions we're used to.  
+
+Different labs and devices still can't plug into a shared network without custom glue.  
+The translation layers aren't set in stone yet.  
+
+It's a new dawn for networking.  
+And for one, I can't wait to see the new applications it will bring.
+</p>
