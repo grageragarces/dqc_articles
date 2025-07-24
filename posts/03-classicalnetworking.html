@@ -60,11 +60,11 @@
     It fuels a flood of papers proposing new architectures with little regard for the actual physics.
 
     This blog post aims to dive into what makes distributed quantum computing fundamentally different from a classical networking problem.
-    Because after all new problems, mean new opportunities.
+    Because after all, new problems mean new opportunities.
 
 </p>
 
-<h2> The Quantumness aspect </h2>
+<h2> The Quantum aspect </h2>
 
 <p>
     So what does the Q in DQC entail? 
@@ -102,7 +102,7 @@
     We can forward information if we combine a quantum connection with a classical one, sidestepping the copying issue.
     It's a simplification, but one I found useful when I first entered the quantum communications world.
     This is a whole new paradigm, with a whole new set of problems and opportunities.
-    Straightforward classical translations won't always work as the purpose of these communications is simply different:
+    Straightforward classical translations won't always work, as the purpose of these communications is simply different:
     Correlations, correlations, correlations.
 </p>
 
@@ -134,7 +134,7 @@
 <h2> Local is now Global </h2> <!-- I feel like this paragraph is quite weak and much shorter... what could we add to improve? -->
 
 <p>
-    Because the quantum distribution game is a correlations game,not a data forwarding game, a new reality arises.  
+    Because the quantum distribution game is a correlations game, not a data forwarding game, a new reality arises.  
     The idea of locality can be violated.  
     A change in one node can instantly affect the entire global quantum state.  
     This is because distributed quantum systems often maintain entangled states across nodes.  
@@ -154,14 +154,14 @@
     We don't just have to deal with bit flips on individual qubits, but with corrupted correlations.  
     In this framework, classical fault isolation breaks down.  
     An error on one node of the global state can trigger a cascade across the system.  
-    This interconnectivity, is the power and the achiles heel of quantum computing.
+    This interconnectivity is the power and the achiles heel of quantum computing.
     Even simulations are non-trivial when we can't just cut up a large computation into partitions to run them independently.  
     Unless there were clear un-connected subgraphs in the larger global graph state, cutting up a large graph without interconnecting its partitions would not be equivalent to the original graph.
 </p>
 
 <p>
-    Furthermore synchronization can be quite the issue if not deal with properly.
-    Qubits are fragile things requiring precise timings and control alignements.
+    Furthermore, synchronization can be quite the issue if not dealt with properly.
+    Qubits are fragile things requiring precise timings and control alignments.
     Even nanosecond-scale timing drift can cause an entangled pair to decohere before it's useful. 
     Distributed gates require tight control over laser pulses, clocks, and coherence windows.
 </p>
