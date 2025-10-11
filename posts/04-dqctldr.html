@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DQC State of the art today: the TLDR overview</title>
+  <link rel="stylesheet" href="../style.css" />
+
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+  <article>
+    <h1>DQC State of the art today: the TLDR overview</h1>
+    <p><em>? of October 2025</em></p>
+
+    <p>
+    Abstract
+    </p>
+
+    <p><a href="../index.html">← Back to all posts</a></p>
+  </article>
+</body>
+</html>
+
+
+<p> 
+
+1) early stages I mean the first landmark paper is from 2018 (pablo and chris)
+
+we jsut got the claim to the first distributed quantum computer - although it is no publicly accessible
+this is xanadus aurora - but in a way any photonic quantum computer is distributed by definition 
+distribution in a sense comes "for free" in that architecture because Ur computing with photons that are moving around anyways
+and the qubits that are sent through networks in long distance settings are photons.
+you can technically actually manually move atoms or ions from one table to another by pinching them but from my understand this is not scalable, so quantum network = flying qubits = photons
+
+we had the claim of the first distributed algorithm by oxford this year
+was it really an algorithm or even a protocol? well not really they did teleportation
+it was really not associated to computation done at either side so like it kinda wasn't a distributed algorithm but no matter
+
+“In just seven years, the field went from theoretical sketches to experimental claims of distribution — though we’re still far from practical DQC.
+
+there are currently no testbeds we can work with either 
+so what are dqc people doing and whats probably going to go wrong 
+
+difference between communication-level distribution and computational distribution — i.e., sending qubits vs distributing computation.
+That distinction helps readers understand why teleportation ≠ DQC yet.
+</p>
+
+<p> 
+2) a bit part of the dqc discourse is the partitioning of computations for distribution
+this is something that hpc people through about way back when to
+like they reached back in the day and we're slowly coming to see its quite a hard problem to solve
+as things scale you can't be cutting up 1 million qubit computations 
+Ur gonna need a hpc just to manage your quantum computer!
+This is also a problem that arises in compilation optimizations, 
+walking through the landscape of possible optimizations for a semi reasonable quantum computatio is incredibly computationally demanding.
+but either way its a bit of a collide with proposing a solution to scalability
+</p>
+
+<p> 
+3) what people can do is distribute quantum comp and then recomp the solution with classical channels
+qiskits addon library does this quite nicely
+you basically run the computation fully sequentially and use the output of many shots of one side as the inputs to the second 
+this emulates a quantum channel
+but it break entanglement, meaning its not as accurate
+and more importantly its exponentially costly
+also it just doesn't in any way represent the real noise that will arise in these networks that we need to deal with.
+more on this later.
+but! despite all of this it does mean we can try out distributed quantum algorithms
+and a few examples have staters appearing (citq??)
+there is also a proposal to emulate a quantum channel within a device by basically channing many cnot jumps between to subcomputations that are as possibly physically separated as possible within a chip
+</p>
+
+<p> 
+4) errors errors erros... over the past few months these have been dizziying me
+you see networks 
+1) don't present the same error profiles as quantum computers
+2) they inject about an order of magnitude higher final loses into the final fidelity based on current simulations
+3) the effect they inject depends on the communication primitive you perform
+
+not to mention that in dqc we're often talking about having different kinds of computers collaborating with each other
+this leads to heterogeneous noise profiles
+and perhaps even local (baked in) corrections occuring in some devices but not in others 
+
+for communication primitives U have two options tp and cat
+tp = teleportation, you can think of it as wire cutting 
+the technique under hardware contraints for capacity here is swapping! 
+cat is different it is gate cuttting and works this way
+
+*will inser image here*
+</p>
+
+<p> 
+5) so what simulators are out There:
+    1) a classiq is netsquid by tu deltf
+    good / bad
+    2) sequence is its' open source counterpart
+    3) recently cisco has laid claim to its network-aware distributed quantum compiler
+    4) qiskit addon has ..
+</p>
+
+<p> 
+Conclusion?
+</p>
