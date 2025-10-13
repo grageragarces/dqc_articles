@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DQC State of the art today: the TLDR overview</title>
+  <title>DQC State of the Art Today: the TLDR Overview</title>
   <link rel="stylesheet" href="../style.css" />
   <script>
     MathJax = {
@@ -26,12 +26,10 @@
     and what challenges remain before real implementations appear.
     </p>
 
-<p><a href="../index.html">← Back to all posts</a></p>
-</article>
-</body>
-</html>
+    <p><a href="../index.html">← Back to all posts</a></p>
 
 <section>
+  <h2>Early milestones</h2>
   Distributed quantum computing is still in its early days.  
   The first theoretical papers on the topic only started appearing around 2018.  
 
@@ -44,7 +42,7 @@
   For that reason, most visions of quantum networking rely on photons as the carriers of entanglement.  
 
   We also recently saw a claim from Oxford of the first distributed algorithm.  
-  In practice, what they demonstrated was teleportation between two processors—not a computation distributed across them.  
+  In practice, what they demonstrated was teleportation between two processors, not a computation distributed across them.  
   Still, it marks an experimental milestone: in just seven years, the field has moved from theoretical abstractions to physical demonstrations of distribution.  
 
   That said, we are still far from practical DQC.  
@@ -56,91 +54,97 @@
   That's what we'll explore in this post.
 </section>
 
-
 <section>
   <h2>The shaking heads from HPC experts</h2> 
-  <!-- I feel like we haven't actually explained hypergraph partitioning here -->
 
   A big part of the DQC conversation is how to partition computations for distribution.  
-  This is not a new problem—HPC people have been thinking about it for decades.  
+  This is not a new problem; HPC people have been thinking about it for decades.  
   They learned the hard way that splitting large computations across machines is messy.  
   You have to balance load, minimize communication, and somehow keep everything consistent.  
 
+  To understand how this is done, it helps to recall what partitioning means.  
+  In both classical and quantum settings, partitioning often starts by representing the computation as a graph or hypergraph.  
+  Each node represents a variable or qubit, and edges represent dependencies between them.  
+  The goal is to divide the structure into smaller parts that minimize connections between them, because each connection represents costly communication across devices.  
+
   As systems scale, that becomes harder.  
-  You can't realistically “cut up” a million-qubit computation without huge orchestration overhead.  
-  You'd need a high-performance computer just to manage your quantum computer.  
+  You can't realistically cut up a million-qubit computation without huge orchestration overhead.  
+  You would need a high-performance computer just to manage your quantum computer.  
 
   In HPC, people model problems as graphs and use tools like METIS or KaHyPar to decide how to split them with minimal cross-talk.  
-  We're now doing the same with quantum circuits, only every cut you make becomes a teleportation or an entangled link, much more expensive than sending classical data.  
+  We are now doing the same with quantum circuits, only every cut you make becomes a teleportation or an entangled link, much more expensive than sending classical data.  
 
   Compilation adds another layer.  
   Exploring all possible optimizations for even a moderately sized quantum circuit is already computationally heavy.  
-  Add partitioning and you're staring at an NP-hard search problem.  
+  Add partitioning and you are staring at an NP-hard search problem.  
 
-  So there's an irony here: distribution is supposed to help scalability, yet solving distribution itself already demands scalable computation.  
-  It's an old HPC headache, now with quantum error rates attached.
+  So there is an irony here: distribution is supposed to help scalability, yet solving distribution itself already demands scalable computation.  
+  It is an old HPC headache, now with quantum error rates attached.
 </section>
 
-
 <section>
-      <h2>How we CAN emulate distribution today</h2>
-  <!-- Is the concept of emulation clear? Maybe this subsection needs more intro into hey we can do some experimental stuff -->
+  <h2>How we can emulate distribution today</h2>
+
+  While we wait for actual distributed quantum hardware, researchers can still experiment with aspects of distribution using emulation.  
+  Emulation means recreating the behavior of a distributed setup on existing devices or simulators.  
 
   Since there are no real DQC testbeds yet, what people can do for now is emulate distribution.  
   The most common approach is to run parts of a quantum computation separately, then stitch the results together using classical channels.  
 
   Qiskit's cutting addon does this quite nicely.  
   You run one subcircuit, sample it many times, and feed those measurement results as inputs to the next subcircuit.  
-  This reproduces what communication between two QPUs would do—at least at the level of data flow.  
+  This reproduces what communication between two QPUs would do, at least at the level of data flow.  
 
   The catch is that this process breaks entanglement between partitions.  
-  That means it's not physically accurate and, worse, becomes exponentially costly with circuit size.  
-  It also doesn't capture the actual noise that would appear in a real networked setting.  
+  That means it is not physically accurate and, worse, becomes exponentially costly with circuit size.  
+  It also does not capture the actual noise that would appear in a real networked setting.  
 
-  Despite that, it's useful.  
+  Despite that, it is useful.  
   It lets us test distributed algorithms and explore how cutting affects fidelity or runtime before hardware catches up.  
   A few early examples are starting to appear, mostly in simulation papers and small-scale experiments.  
 
-  There's also an avenue for emulating a quantum channel within a single device, basically emulating a channel.  
-  The idea is to chain many CNOT “hops” between two subcomputations that are as physically far apart as possible on the chip.  
-  It's not real networking, but it gives a sense of what distribution might look like over quantum channels.
+  There is also an avenue for emulating a quantum channel within a single device, basically emulating a channel.  
+  The idea is to chain many CNOT hops between two subcomputations that are as physically far apart as possible on the chip.  
+  It is not real networking, but it gives a sense of what distribution might look like over quantum channels.
 </section>
-
 
 <section>
   <h2>Errors, errors, errors</h2>
-<!-- Did we say much here? should we talk more about the downsides? or future work? I feel like the cat and tp stuff just fall flat with no connection to anything but they are quite important to explain -->
 
   Over the past few months, these have been dizzying me.  
 
-  The thing with networks is that they don't behave like standalone quantum computers.  
+  The thing with networks is that they do not behave like standalone quantum computers.  
   First, they have completely different error profiles.  
   Second, simulations show they can inject roughly an order of magnitude higher losses into the final fidelity.  
   Third, the effect depends on the communication primitive you use: the noise changes depending on how you move qubits around.  
 
-  In DQC, we're also often talking about different kinds of quantum computers working together.  
+  In DQC, we are also often talking about different kinds of quantum computers working together.  
   That means heterogeneous noise profiles behaving differently across devices.  
-  Some nodes might have local error mitigation “baked in,” while others don't.  
+  Some nodes might have local error mitigation baked in, while others do not.  
 
-  For communication primitives, we basically have two options: **TP** and **CAT**.  
-  TP stands for teleportation, the
-  transfer of quantum states through classical communication and shared entanglement (you can think of it as wire cutting).
-  Under device capacity constrainsts it is often utilized as a non-local swap, enabling the exchange of qubits to perform localised computations
-  on distanced devices. 
+  For communication primitives, we basically have two options: TP and CAT.  
+  TP stands for teleportation, the transfer of quantum states through classical communication and shared entanglement.  
+  Under device capacity constraints it is often utilized as a non-local swap, enabling the exchange of qubits to perform localised computations on distanced devices.  
 
   CAT, on the other hand, stands for gate cutting.  
   Instead of sending a whole state, it effectively teleports the action of a gate.  
-  You perform a non-local operation by consuming an entangled resource (often a GHZ or “cat” state).  
+  You perform a non-local operation by consuming an entangled resource, often a GHZ or cat state.  
+    
+  <!-- TODO -->
+  <!-- [Image placeholder here for TP vs CAT illustration] -->
 
-  *[Image placeholder here for TP vs CAT illustration]*
+  Both TP and CAT are essential for practical DQC, but they come with trade-offs.  
+  Teleportation is simpler but communication-heavy, while gate cutting preserves structure but is highly noise-sensitive.  
+  Current research is focused on reducing their overheads and integrating them into compilers so that distribution decisions automatically account for error propagation and noise models.
 </section>
 
 <section>
   <h2>Simulators, our best worst option</h2>
-  <!-- I am perhaps too negative, keep my criticism but add some there is another option if no hardware -->
 
-  Since we can't yet test distributed setups on real hardware, we end up relying on simulators.  
-  And honestly I don't love them.  
+  Since we cannot yet test distributed setups on real hardware, we end up relying on simulators.  
+  And honestly I do not love them.  
+  Still, they are the only practical sandbox we have right now.  
+  Without simulators, we could not even prototype communication protocols or benchmark distributed algorithms conceptually.  
 
   Especially the ones not based on real device data.  
   They can be useful, but they often give a false sense of performance or noise behavior.  
@@ -150,13 +154,17 @@
   If you want to explore DQC today, these are your main options:  
 
   <ul>
-    <li><strong>NetSquid</strong> (TU Delft): considered state of the art for quantum network simulation. Closed-source, which means you can't inspect or modify the internals—it's a black box unless you collaborate with the team.</li>
+    <li><strong>NetSquid</strong> (TU Delft): considered state of the art for quantum network simulation. Closed-source, which means you cannot inspect or modify the internals; it is a black box unless you collaborate with the team.</li>
     <li><strong>SeQUeNCe</strong>: the main open-source counterpart. It models realistic network layers and lets you build distributed protocols from scratch.</li>
-    <li><strong>Cisco</strong>: claims to have a network-aware distributed quantum compiler. It's not public, but conceptually very interesting—it's one of the few industrial efforts linking compilation to networking.</li>
-    <li><strong>Qiskit Addon</strong>: lets you emulate circuit cutting classically within Qiskit, which is great for quick experiments, though it doesn't reproduce real entanglement or noise.</li>
-    <li><strong>Wellinq's compiler</strong>: shared by Kristina, another tool exploring compilation across modular architectures.</li>
+    <li><strong>Cisco</strong>: claims to have a network-aware distributed quantum compiler. It is not public, but conceptually very interesting, one of the few industrial efforts linking compilation to networking.</li>
+    <li><strong>Qiskit Addon</strong>: lets you emulate circuit cutting classically within Qiskit, which is great for quick experiments, though it does not reproduce real entanglement or noise.</li>
+    <!-- TODO -->
+    <!-- <li><strong>Wellinq's compiler</strong>: shared by Kristina, another tool exploring compilation across modular architectures.</li> -->
   </ul>
 
-  If you're a researcher working on something else or have a better simulator to recommend, please let me know and I'll add it here.
+  If you are a researcher working on something else or have a better simulator to recommend, please let me know and I will add it here.
 </section>
 
+  </article>
+</body>
+</html>
