@@ -22,7 +22,7 @@
 
     <p>
     In just seven years, DQC went from theoretical sketches to experimental claims of distribution, though we are still far from practical DQC. 
-    This post lists what is missing, what we have, and what you can actually try today.  
+    This post lists what's missing, what we have, and what you can actually try today.  
     </p>
 
     <p><a href="../index.html">← Back to all posts</a></p>
@@ -30,17 +30,17 @@
 <section>
 
   Distributed quantum computing is young.  
-  The first theoretical papers appeared around 2018, and already we have experimental claims of distribution.  
+  The first theoretical papers appeared around 2018, and already we have experimental claims of distribution.<br>  
   Xanadu's Aurora, announced about a year ago, was the first claim of a distributed quantum computer.  
   The device itself has not been publicly released, but its photonic architecture is interesting because photons are the flying qubits that naturally carry quantum information between modules.  
   In a sense, photonic quantum computers are distributed by design.  
-  You can move atoms or ions between locations by optical transport, but that approach is unlikely to scale over long distances, which is why most visions of quantum networking rely on photons as the carriers of entanglement.  
+  You can move atoms or ions between locations by optical transport, but that approach is unlikely to scale over long distances, which is why most visions of quantum networking rely on photons as the carriers of entanglement.<br>  
   Oxford's recent experiment claiming a distributed algorithm (technically a teleportation between two processors rather than a computation across them) marked another small but meaningful step.  <br>
 In just seven years, the field has moved from theoretical sketches to physical demonstrations of distribution.  <br><br>
 
   Still, we are missing the shared backbone that would let us test these ideas end to end.  
   We have early stage quantum computers and networks, but they rarely meet within a single experimental setup.  
-  A real shame, especially given that many institutions hold both under the same roof.
+  A real shame, especially given that many institutions hold both under the same roof.<br>
   Given that public distributed testbeds are non-existent, we cannot yet benchmark distributed workloads or reproduce results across groups.  
   This also means that the measurements required to calibrate distributed quantum simulators are non-existent.<br>
   On the other side of the spectrum, compiler stacks that treat communication as a first class resource with explicit costs are few, and even fewer integrate real network models.  
@@ -52,7 +52,7 @@ In just seven years, the field has moved from theoretical sketches to physical d
 </section>
 
 <section>
-  <h2>Emulation and Simulation</h2>
+  <h2>Emulation & Simulation</h2>
 
     <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
   <strong>Emulation</strong> refers to running real quantum programs today while mimicking distribution mechanics.  
@@ -86,7 +86,7 @@ In just seven years, the field has moved from theoretical sketches to physical d
 
   <ul>
     <li><a href="https://netsquid.org" target="_blank">NetSquid</a> (TU Delft): considered state of the art for quantum network simulation. Closed source, so internals are not directly inspectable or modifiable unless you collaborate.</li>
-    <li><a href="https://github.com/sequence-toolbox/SeQUeNCe" target="_blank">SeQUeNCe</a>(Argonne Labs): an open source counterpart. It models realistic network layers and lets you build distributed protocols from components.</li>
+    <li><a href="https://github.com/sequence-toolbox/SeQUeNCe" target="_blank">SeQUeNCe</a> (Argonne Labs): an open source counterpart. It models realistic network layers and lets you build distributed protocols from components.</li>
     <li><a href="https://qiskit.github.io/qiskit-addon-cutting/" target="_blank">Qiskit Addon</a>: supports classical emulation of circuit cutting inside Qiskit. Fast to try. Not a physical network simulator.</li>
   </ul>
 
@@ -143,24 +143,30 @@ In just seven years, the field has moved from theoretical sketches to physical d
 <section>
   <h2>An open letter to anyone who will read: make a testbed</h2>
 
-  We have theory.  
-  We have prototypes.  
-  We even have simulators that claim to capture the future.  
-  What we do not have is a place to make them meet.  
-  A true distributed quantum testbed would change that.  
-  It would let us connect real processors, quantify network noise, and check whether our emulations reflect physical reality.  
-  It would turn distributed quantum computing from concept to science.  
+  Almost every quantum hardware company out there talks about scalability, often directly pointing to DQC and quantum networking.
+  Today we have theory,  
+  prototypes, 
+  simulators that claim to capture the future,
+  and more importantly an eager growing interest from the research community. 
+  What we do not have is a place to make them meet, a baseline to test and compare.  
+  We need a true distributed quantum testbed.  
+  One that would let us connect real processors (that are computationally relevant +50 qubit nodes), quantify network noise in real distributed computation settings, and check whether our emulations reflect physical reality.  
+  One that would turn distributed quantum computing from concept to science.  
   <br><br>
 
-  If you are a lab with both a quantum computer and a quantum network, connect them.  
-  If you are a company running multiple devices, open a fraction of that infrastructure for research access.  
-  If you are funding national or academic programs, make node pairs public.  
+  If you are a lab with both a quantum computer and a quantum network, connect them. 
+  You'll be one of the first to do so. <br>
+  If you are a company connecting multiple devices, open a fraction of that infrastructure for research access. 
+  This is, in my personal view, how IBM got the monopoly it currently holds over quantum cloud access.
+  It was the first company who opened the door in an accessible manner.
+  The time is coming for DQC, gain that terrain. <br> 
+  If you are funding national or academic programs, build and make node pairs public.  
   Shared hardware is how we build shared truth.  
   <br><br>
 
   Until we can execute protocols on connected machines, DQC will remain a theoretical promise.  
   The missing link between vision and validation is a public testbed.  
-  Build it (and let me know how it goes).  
+  Build it (and let me know how it goes)!
 </section>
 
 <section>
