@@ -38,17 +38,17 @@
   Oxford's recent experiment claiming a distributed algorithm (technically a teleportation between two processors rather than a computation across them) marked another small but meaningful step.  <br>
 In just seven years, the field has moved from theoretical sketches to physical demonstrations of distribution.  <br><br>
 
-  Still, we are missing the shared backbone that would let us test these ideas end to end.  
-  We have early stage quantum computers and networks, but they rarely meet within a single experimental setup.  
+  Still, we are missing the shared backbone that would let us test these ideas end-to-end.  
+  We have early-stage quantum computers and networks, but they rarely meet within a single experimental setup.  
   A real shame, especially given that many institutions hold both under the same roof.<br>
   Given that public distributed testbeds are non-existent, we cannot yet benchmark distributed workloads or reproduce results across groups.  
   This also means that the measurements required to calibrate distributed quantum simulators are non-existent.<br>
-  On the other side of the spectrum, compiler stacks that treat communication as a first class resource with explicit costs are few, and even fewer integrate real network models.  
+  On the other side of the spectrum, compiler stacks that treat communication as a first-class resource with explicit costs are few, and even fewer integrate real network models.  
   Error models for quantum channels are scattered and hard to compare across platforms.  
   Orchestration layers that manage heterogeneous devices and track entanglement as a consumable are only starting to appear.    <br><br>
 
   In other words, we are missing the shared infrastructure and public access that would make distributed quantum computing a testable reality.
-  So what are researchers doing in the mean time?
+  So what are researchers doing in the meantime?
 </section>
 
 <section>
@@ -64,15 +64,15 @@ In just seven years, the field has moved from theoretical sketches to physical d
 
   <ul>
     <li><strong>Knitting:</strong>  
-  Today we subcircuits separately and stitch them with classical data.
+  Today we run subcircuits separately and stitch them with classical data.
   This is often known as circuit knitting.  
   Qiskit's cutting addon is perhaps the most popular software package for this.  
   The idea is to run subcircuits sequentially, sample them many times, and feed those measurements as inputs to the next.  
-  The method breaks inter partition entanglement and scales poorly, 
+  The method breaks inter-partition entanglement and scales poorly, 
   but for a long time it was the only practical option.  <br>
 
 <li><strong>Ladders:</strong>  
-  A more recent alternative consists on chaining many CNOT hops between distant regions of a chip, somewhat emulating the role of a noisy quantum link without breaking entanglement. 
+  A more recent alternative consists of chaining many CNOT hops between distant regions of a chip, somewhat emulating the role of a noisy quantum link without breaking entanglement. 
   <br>
 </ul>
 
@@ -80,21 +80,27 @@ In just seven years, the field has moved from theoretical sketches to physical d
   We also have simulators, often the best worst option. 
   Simulators allow us to model quantum networks and distributed protocols beyond any emulation capacity. 
   They permit us to design and compare protocols, study scaling, and build architectural infrastructure for tomorrow's devices.
-  Yet they must always be interpreted with care, especially given that they are not calibrated to real devices.  <br>
-
-  If you want to explore DQC in simulation, these are common choices:  
+  Yet they must always be interpreted with care, especially given that they are not calibrated to real devices.
+    At a fundamental level, simulating quantum mechanics on classical machines is not an ideal solution.
+    It is this very limitation that got us into this whole business of building quantum computers in the first place.
+    Normalizing simulators as a research tool leads us to papers talking about DQC tests done on simulations of 8 qubits,
+    which is antithetical to the whole point of DQC for scalability, and in no way reflects the complexities that need to be tackled by large-scale 
+    distributed systems.
+    Still, for now, these simulations are what we have, and I am perhaps too young to play the academic downer here.
+    <br><br>
+    If you want to explore DQC in simulation, these are common choices:
 
   <ul>
     <li><a href="https://netsquid.org" target="_blank">NetSquid</a> (TU Delft): considered state of the art for quantum network simulation. Closed source, so internals are not directly inspectable or modifiable unless you collaborate.</li>
-    <li><a href="https://github.com/sequence-toolbox/SeQUeNCe" target="_blank">SeQUeNCe</a> (Argonne Labs): an open source counterpart. It models realistic network layers and lets you build distributed protocols from components.</li>
+    <li><a href="https://github.com/sequence-toolbox/SeQUeNCe" target="_blank">SeQUeNCe</a> (Argonne Labs): an open-source counterpart. It models realistic network layers and lets you build distributed protocols from components.</li>
     <li><a href="https://qiskit.github.io/qiskit-addon-cutting/" target="_blank">Qiskit Addon</a>: supports classical emulation of circuit cutting inside Qiskit. Fast to try. Not a physical network simulator.</li>
   </ul>
 
   Notably, companies seem increasingly interested in distributed compilers.  
   Both Welinq's araQne and Cisco's network-aware compiler have been announced as attempts to link quantum compilation with networking, though neither is publicly available yet.
 
-  Despite the increase in interest, none of these options deliver a public end to end DQC stack, but
-  together they cover protocol design, network effects, and compiler informed slicing.  
+  Despite the increase in interest, none of these options deliver a public end-to-end DQC stack, but
+  together they cover protocol design, network effects, and compiler-informed slicing.  
   But even the best emulations fall short for one main reason: they can't capture how noise behaves in real distributed setups.
 </section>
 
@@ -103,8 +109,7 @@ In just seven years, the field has moved from theoretical sketches to physical d
 
   Noise is the main reason simulators and emulators fall short.  
   It dominates fidelity and defines whether any distributed computation survives execution.  
-  Early studies already show that network channels can inject up to an order of magnitude more loss than local gates and measurements [Campbell et al. 2022]
-  , when modeled with the same internal noise levels.  
+  Early studies already show that network channels can inject up to an order of magnitude more loss than local gates and measurements [Campbell et al. 2022], when modeled with the same internal noise levels.  
   The difference comes from how network noise behaves: it depends on distance, link quality, timing, and how qubits are moved or entangled across space.  
   That spatial dependence cannot be emulated within a single chip, which makes calibration against real hardware impossible for now.  
   <br><br>
@@ -147,18 +152,18 @@ In just seven years, the field has moved from theoretical sketches to physical d
   Today we have theory,  
   prototypes, 
   simulators that claim to capture the future,
-  and more importantly an eager growing interest from the research community. 
-  What we do not have is a place to make them meet, a baseline to test and compare.  
+  and more importantly, an eager and growing interest from the research community. 
+  What we lack is a place where they can meet, a baseline to test and compare.  
   We need a true distributed quantum testbed.  
   One that would let us connect real processors (that are computationally relevant +50 qubit nodes), quantify network noise in real distributed computation settings, and check whether our emulations reflect physical reality.  
-  One that would turn distributed quantum computing from concept to science.  
+  One that could turn distributed quantum computing from a concept into a science.
   <br><br>
 
   -> If you are a lab with both a quantum computer and a quantum network, connect them. 
   You'll be one of the first to do so. <br>
   -> If you are a company connecting multiple devices, open a fraction of that infrastructure for research access. 
   This is, in my personal view, how IBM got the monopoly it currently holds over quantum cloud access.
-  It was the first company who opened the door in an accessible manner.
+  It was the first company that opened the door in an accessible manner.
   The time is coming for DQC, gain that terrain. <br> 
   -> If you are funding national or academic programs, build and make node pairs public.  
   Shared hardware is how we build shared truth.  
