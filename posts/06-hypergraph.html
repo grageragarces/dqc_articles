@@ -17,25 +17,56 @@
 </head>
 <body>
   <article>
-    <h1>Hypergraph partitioning techniques a quick overview</h1>
-    <p><em>24th of November 2025</em></p>
+    <h1>Partitioning Hypergraphs: heuristic approaches</h1>
+    <p><em>?th of December 2025</em></p>
 
     <p>
     ABSTRACT
     </p>
 
     <p><a href="../index.html">← Back to all posts</a></p>
+ 
+<section>
+  <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+    <strong>Graph:</strong> A mathematical structure consisting of <em>nodes</em> (vertices) and <em>edges</em> that connect pairs of nodes. 
+    Each edge links <em>two</em> nodes together.
+  <br>
+    <strong>Hypergraph:</strong> A generalization of a graph where edges (called <em>hyperedges</em>) 
+    can connect any number of nodes, <em>not</em> just two. 
+    A hyperedge can link two, three, four, or more nodes simultaneously.
+    You can think of a hypergraph as a collection of groups, where each hyperedge defines one group of interconnected nodes.
+  </div>
 
-<!-- <img src="../images/ibm_cisco_1.png" alt=" IBM and Cisco's quantum networking plan" style="max-width: 100%; height: auto;"> -->
+<img src="../images/graph_hyper.png" alt=" IBM and Cisco's quantum networking plan" style="max-width: 35%; height: auto%;"> 
+  <br>
 
-<section> 
-why useful?
-<!-- <br> -->
+Hypergraphs are a mathematical structure that allow us to encode relationships between different entities.
+In distributed quantum computing, they are used to encode the relationships between qubits, such that when these are assigned to different quantum processors, 
+if they hold some connection between them (let's say through a CX gate in the computation), 
+this connection is respected accross the devices through whichever links connect the QPUs.
+Meaning that if we allot groups of qubits needed for a distributed computation to two interconnected QPUs, 
+a hypergraph abstraction of this computation allows us to see which hyperedges separate both groups, 
+and thus signify the need for non-local operations (such as a teleportation or cat-entagler).
+<br>
+
+<figure style="text-align: center; margin: 20px 0;">
+  <img src="../images/cat_tp.png" alt="CAT and TP implementation of CX gate" style="max-width: 50%; height: auto;">
+  <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+    Teleportation (TP) or cat-entagler (CAT) based implementations of non-local CX gates between qubits in different QPUs.
+    Taken from <a href="https://arxiv.org/pdf/2207.11674" target="_blank">AutoComm: A Framework for Enabling Efficient Communication in Distributed Quantum Programs</a>.
+  </figcaption>
+</figure>
+
+<br>
+This way of modeling distributed quantum computations has intertwined hypergraph theory with the field of DQC.
+In this blog post I will dive into hypergraph partitioning heuristics designed to tackle the hypergraph partitioning problem, 
+which is a very well known NP-hard problem in computer science, but may not be the best fit for DQC.
+
 </section>
 
 <section> 
   <h2>Hypergraphs in DQC</h2>
-how did it come into the discourse
+how did it come into the discourse - papers
 </section>
 
 <section> 
