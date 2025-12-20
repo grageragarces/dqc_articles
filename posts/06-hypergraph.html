@@ -66,7 +66,22 @@ which is a very well known NP-hard problem in computer science, but may not be t
 
 <section> 
   <h2>Hypergraphs in DQC</h2>
-how did it come into the discourse - papers
+  <!-- ARE WE REPEATING OURSELVES FROM THE ABSTRACT? -->
+Hypergraph based representations came into the Distributed Quantum computing sphere back in 2018 through Martinez's and Heunen's <a href="https://arxiv.org/pdf/??" target="_blank">INSERT NAME OF PAPER</a>.
+Hypergraphs serve as a very natural abstraction of the dependencies that must be maintained accross sub-workloads of a larger computation, 
+which is a crucial part of the DQC problem: how do I cut up my computational pie such that my cut up pie is equivalent to my original?
+The original proposal was to represent qubits as the items/nodes of a hypergraph and quantum gates as the hyperedges connecting these qubits.
+Meaning that the computational dependencies generated multi-qubit gates, which are in essense entangling gates, were now encoded into this abstraction.
+
+  <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+    <strong>Non-local gate:</strong> TODO
+  </div>
+
+This is very useful because these gates can be "converted" into non-local gates (so can other computational instructions in quantum circuits, I will explain this later, for now believe my simplification), 
+meaning that they can serve as the communication primitive (the quantum instructions/info sent accross a quantum channel) to interweave the smaller computations into the larger computation we were originally distributing.
+Conveniently, there is a very famous problem associated to this: the hypergraph partitioning problem.
+<!-- check spelling of the word essense -->
+  </figcaption>
 </section>
 
 <section> 
