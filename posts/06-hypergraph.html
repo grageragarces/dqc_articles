@@ -207,45 +207,248 @@ NP-hard problem implies heuristics.
   They are often used for NP-hard problems where exact solutions are computationally infeasible.
     </div>
   
-Let's talk about them some of the most popular heuristics for hypergraph partitioning today (namely the specific problem I defined above).
+Let's look into some of the most popular heuristics for hypergraph partitioning today (namely the specific problem I defined above).
+
+<br>
+<h3>Greedy and random: the simple path</h3>
+<em> The Simplest Solution is the Best Solution ~ Occam’s Razor</em>
+<br><br>
+
+Greedy and random methods operate directly on the hypergraph without any nonsense (what I mean by "nonsense" will become clear later). 
+They're fast, straightforward, and surprisingly effective for quick-and-dirty partitioning when you don't have time for the computational equivalent of a five-course meal.
+
+    <figure style="max-width: min(100%, 400px); height: auto;text-align: center; margin: 20px 0;">
+      <img src="../images/hipos.webp" alt="Hungry Hungry Hippos the game" style="max-width: 80%; height: auto;">
+      <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+        The greedy logic personified: Hungry Hungry Hippos, the boardgame.
+      </figcaption>
+    </figure>
+
+<br><br>
+
+<strong>Greedy algorithms</strong> follow the age-old strategy of "make the best choice right now and hope for the best later".
+In hypergraph partitioning, this means starting with to "eat" (in fancy talk we would call this seed) a node 
+and growing partitions by repeatedly eating the next/closest node that minimizes some cost metric (in this case number of cut hyperedges). 
+This method is as fast as you're going to get and works ridiculously well especially when hypergraphs have strong locality or community structure.
+In my own work I've seen it outperform (KaHyPar - the favourite DQC baseline, and an incredible multilevel partitioner) 
+on a stupid amount of real circuits (fake/artificially created circuits tend to not behave the same as "real circuits", meaning circuits actually created to implement quantum algorithms that present advantages), 
+to the point in which I am not too convinced that it shouldn't be the default baseline for DQC hypergraph partitioning. 
+Its speed, performance, and implementation simplicity make it in my eyes an unironic contender for the long game in this field. 
+The "meat" of the game here is that first seeding, it is not an uncommon assumption in heuristic hypergraph methods as you will soon see.
+
+<br><br>
+
+<strong>Random partitioning</strong> is exactly what it sounds like. U just randomly assign nodes to partitions. 
+Again, stupid as it may sound, it's actually a legitimate baseline and sometimes used as an initial solution for more sophisticated methods. 
+Plus, when combined with refinement techniques, random starting points can actually lead to surprisingly good results. 
+And what beauties quantum computers are at generating randomness, are they not?
+
+<br><br>
+
+<strong>Spectral methods</strong> bring a dust of linear algebra into the mix. 
+These use eigenvalues and eigenvectors of matrices derived from the hypergraph (like the Laplacian) to find good partitions. 
+The basic idea: the eigenvector corresponding to the second smallest eigenvalue (the Fiedler vector) gives you a natural ordering of nodes, and you can cut along this ordering to create partitions. 
+It's mathematically neat but <u>expensive</u> for large hypergraphs (aka anything of interest).
+
+<br><br>
+
+If you want to play around with greedy methods, most hypergraph libraries include basic implementations. 
+For spectral methods, check out tools like <a href="https://networkx.org" target="_blank">NetworkX</a> (for graphs) or implement your own using numpy/scipy for the eigenvalue computations.
+
+<br><br>
+
+<h3>Iterations: local search</h3>
+
+With simple but efficient out of the way, let's build our way into obscure complex stuff, starting at the simplest row: local search methods.
+Local search is all about starting with a solution (could be random, could be greedy, nobody seems to care even though it actually matters quite a lot) 
+and then iteratively improving it by making small tweaks. 
+It's like being a gen-Z and renting your first room (because houses are not gonna happen), then slowly upgrading the furniture over a few years until you have a Pinterest-worthy space (or a compromise).
+These methods are the workhorses of hypergraph partitioning and show up everywhere, especially as refinement steps in more complex algorithms.
+
+<br><br>
+
+The absolute classic here is <strong>FM</strong> (Fiduccia-Mattheyses). 
+FM works by maintaining a priority queue of nodes sorted by their "gain" (how much moving a node to another partition would improve the cut). 
+At each step, you pick the node with the highest gain, move it, lock it (you don't get to move it again in this pass), and update the gains of neighboring nodes. 
+You keep going until all nodes are locked, then you roll back to the best solution you saw during the pass. 
+At that point you unlock everything and do it all over again until you stop seeing improvements.
+
+<figure style="text-align: center; margin: 20px 0;">
+  <img src="../images/FM.png" alt="Fiduccia-Mattheyses graph" 
+        style="max-width: 400px; max-height: 400px; height: auto; width: auto; object-fit: contain;">
+  <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+    Hypergraph on the left, possible "gain lists" on the right for FM. 
+    Taken from <a href="https://limsk.ece.gatech.edu/book/slides/pdf/FM-partitioning.pdfg" target="_blank">Georgia tech lecture notes</a>.
+      </figcaption> 
+</figure>
+
+<br><br>
+
+What makes FM clever is that it allowstemporary bad moves, you might make the cut worse for a bit, but the algorithm can escape local minima this way 
+(at least theoretically).
+It's actually quite effective and forms the basis for most modern refinement algorithms.
+
+<br><br>
+
+For multiple partitions (k-way partitioning where k > 2), you've got <strong>k-way FM extensions</strong> that generalize the idea. 
+Instead of just moving nodes between two partitions, you consider all possible target partitions for each node and pick the best one. 
+It's more complex but handles the multi-way case directly without having to do recursive bisection.
+
+<br><br>
+
+There's also <strong>Kernighan-Lin</strong>, which is an older algorithm from the 1970s that works similarly but swaps pairs of nodes between partitions instead of moving single nodes. 
+It's slower than FM but sometimes finds better solutions because it considers pairwise moves.
+
+<br><br>
+
+Most serious hypergraph partitioning tools include FM-style refinement. 
+<a href="https://github.com/kahypar/kahypar" target="_blank">KaHyPar</a> uses heavily optimized FM variants, and you can find standalone implementations in libraries like <a href="https://github.com/UMESIOSS/hMETIS" target="_blank">hMETIS</a>.
+
+<br><br>
+
+<h3>Multilevel: the fancy pants solutions</h3>
+Multilevel methods are where things get sophisticated. 
+These are the state-of-the-art approaches that dominate hypergraph partitioning competitions and real-world applications. 
+The core idea is brilliantly simple: if your hypergraph is too big and messy to partition directly, make it smaller first, partition that, and then carefully expand back to the original size while refining your solution.
+
+<br><br>
+
+The magic happens in three phases:
+
+<ol>
+<li><strong>Coarsening:</strong> Repeatedly merge nodes together to create smaller and smaller versions of your hypergraph. You're basically creating a hierarchy of progressively simpler problems. Common strategies include matching (pair up similar nodes and merge them) or heavy-edge coarsening (merge nodes connected by heavy hyperedges).</li>
+
+<li><strong>Initial partitioning:</strong> Once the hypergraph is small enough, partition it using a simple method (could be greedy, could be random, could even be exact if it's tiny enough). This gives you a rough solution.</li>
+
+<li><strong>Uncoarsening and refinement:</strong> Now reverse the coarsening process. At each level, "unmerge" the nodes and use a local search method (usually FM-style) to improve the partition. By the time you're back to the original hypergraph, you've got a highly optimized solution.</li>
+</ol>
 
 <br>
 
-<h3> Greedy and random: the simple path</h3>
-Operates directly on the original hypergraph without hierarchical decomposition.
+Why does this work so well? Because solving the problem at a coarse level gives you a good global view of the structure, while the refinement at each level handles the local details. 
+It's like sketching the outline of a drawing first, then filling in progressively finer details.
 
-Greedy algorithms (e.g., greedy hypergraph growing)
-Random partitioning
-Spectral methods (eigenvalue-based)
+<br><br>
 
-<h3>Iterations: local search</h3>
-Iteratively improves an existing partition by moving vertices between partitions.
+<strong>KaHyPar</strong> (Karlsruhe Hypergraph Partitioner) is probably the most well-known multilevel tool today. 
+It's incredibly fast, produces high-quality partitions, and is actively maintained. 
+They've got multiple versions (KaHyPar-CA, KaHyPar-K, etc.) optimized for different scenarios.
+Check out their work at <a href="https://kahypar.org" target="_blank">kahypar.org</a> and their <a href="https://github.com/kahypar/kahypar" target="_blank">GitHub repo</a>.
 
-FM (Fiduccia-Mattheyses) - classic move-based refinement
-Kernighan-Lin variants
-k-way FM extensions
+<br><br>
 
-<h3>Multilevel: the fancy pants solutions</h3>
-Three-phase approach: coarsen → partition coarse graph → uncoarsen with refinement
+<strong>hMETIS</strong> is an older classic from the late '90s that pioneered many multilevel techniques. 
+Still widely used and cited, though not as actively developed. 
+Available at <a href="http://glaros.dtc.umn.edu/gkhome/metis/hmetis/overview" target="_blank">UMN's METIS page</a>.
 
-KaHyPar (Karlsruhe Hypergraph Partitioner)
-hMETIS
-PaToH
-Zoltan
+<br><br>
+
+<strong>PaToH</strong> (Partitioning Tool for Hypergraphs) is another heavyweight, particularly popular in scientific computing communities. 
+It's got a nice API and supports various hypergraph models.
+Find it at <a href="https://faculty.cc.gatech.edu/~umit/PaToH/" target="_blank">Ümit Çatalyürek's page</a>.
+
+<br><br>
+
+<strong>Zoltan</strong> is a parallel partitioning toolkit from Sandia National Labs that includes hypergraph partitioning among many other features. 
+It's designed for massive-scale parallel computing and integrates with MPI.
+Check out the <a href="https://github.com/sandialabs/Zoltan" target="_blank">GitHub repo</a>.
+
+<br><br>
+
+The multilevel approach is the gold standard for a reason—it consistently produces the best results for the standard hypergraph partitioning problem. 
+If you're serious about hypergraph partitioning, you're probably using one of these tools.
+
+<br><br>
 
 <h3>Geometry: for the maths enthusiasts</h3>
-Exploit spatial information when vertex coordinates are available.
+Geometric methods are a bit of a different beast. 
+They only work when your hypergraph nodes have associated coordinates in some metric space—think physical locations, embeddings in vector space, or any situation where nodes have a meaningful geometric interpretation. 
+When applicable, they can be extremely fast and produce intuitive partitions that respect spatial locality.
 
-Recursive coordinate bisection
-Space-filling curves (Hilbert, Morton)
-Geometric clustering
+<br><br>
+
+The classic approach is <strong>Recursive Coordinate Bisection (RCB)</strong>. 
+The algorithm is almost painfully simple: pick a coordinate dimension (x, y, or z), find the median value, and split the nodes into two groups based on that median. 
+Then recursively apply this to each partition until you've got the number of partitions you want. 
+It's incredibly fast (roughly O(n log n)) and works great when your problem has strong spatial structure.
+
+<br><br>
+
+For example, if you're partitioning a mesh for finite element analysis, nodes represent physical points in space. 
+RCB will naturally group nearby points together, which is exactly what you want for minimizing communication in parallel scientific computing.
+
+<br><br>
+
+<strong>Space-filling curves</strong> take things up a notch. 
+These use fancy curves like Hilbert or Morton (Z-order) curves that map multi-dimensional space onto a one-dimensional line while preserving locality. 
+You order all your nodes along this curve and then cut it into pieces—instant partitioning with good spatial properties. 
+Hilbert curves in particular are beloved by the parallel computing crowd because they have better locality preservation than Morton curves.
+
+<br><br>
+
+The catch? Geometric methods completely ignore the actual hyperedge structure. 
+They only care about node coordinates. 
+This can be a blessing (super fast) or a curse (might create terrible partitions if the geometry doesn't align with the connectivity). 
+They're best used as either a very fast initial solution or for problems where geometry genuinely dominates the structure.
+
+<br><br>
+
+For implementations, <a href="https://github.com/sandialabs/Zoltan" target="_blank">Zoltan</a> includes excellent RCB and Hilbert curve partitioning. 
+You can also find space-filling curve implementations in libraries like <a href="https://github.com/chrisjsewell/hilbertcurve" target="_blank">hilbertcurve</a> (Python) if you want to roll your own.
+
+<br><br>
 
 <h3>Metaheuristics: black box magic</h3>
-Higher-level search strategies.
+Metaheuristics are the wild cards of optimization—general-purpose search strategies that can tackle virtually any problem as long as you can define a cost function. 
+They're called "meta" because they're higher-level frameworks that guide the search process rather than being specific algorithms tied to hypergraph structure. 
+Think of them as black boxes: you feed in a solution representation and a quality metric, they shake things around using their strategy, and hopefully spit out better solutions.
 
-Genetic algorithms
-Simulated annealing
-Ant colony optimization
+<br><br>
+
+<strong>Genetic Algorithms (GAs)</strong> are probably the most famous metaheuristic. 
+They mimic biological evolution: maintain a population of candidate partitions, combine good ones (crossover), randomly modify some (mutation), and let the best survive over generations. 
+For hypergraph partitioning, each "individual" is a partition, and the fitness function typically combines cut size and balance violations.
+
+<br><br>
+
+GAs can escape local optima by exploring many different regions of the solution space simultaneously. 
+The downside? They're slooooow. 
+Running hundreds or thousands of generations on large hypergraphs is computationally brutal, which is why they're rarely used in production systems for this problem.
+
+<br><br>
+
+<strong>Simulated Annealing</strong> takes inspiration from metallurgy. 
+Start with a random partition at high "temperature," repeatedly make random modifications, and accept worse solutions with some probability that decreases over time (the cooling schedule). 
+This lets you escape local optima early on while eventually settling into a good solution as the temperature drops.
+
+<br><br>
+
+It's simpler than GAs and can work quite well, but it's still pretty slow and requires careful tuning of the cooling schedule. 
+It's been applied to hypergraph partitioning, but again, not something you see in state-of-the-art tools.
+
+<br><br>
+
+<strong>Ant Colony Optimization</strong> is inspired by how ants find paths to food. 
+Virtual ants traverse the hypergraph, leaving "pheromone trails" that influence future ants. 
+Over time, good partitioning strategies accumulate stronger pheromone signals. 
+It's clever, but like the other metaheuristics, it's computationally expensive and doesn't exploit problem structure the way specialized algorithms do.
+
+<br><br>
+
+The fundamental issue with metaheuristics for hypergraph partitioning is that they're too general. 
+They don't leverage the specific structure of hypergraphs the way multilevel methods or FM refinement do. 
+You're trading specialized efficiency for broad applicability. 
+They can work, and might even find interesting solutions in weird corner cases, but for the standard problem you're almost always better off with multilevel methods.
+
+<br><br>
+
+That said, metaheuristics shine when you have <em>additional constraints or objectives</em> that break the standard formulation—things that are hard to incorporate into traditional algorithms. 
+If you want to experiment, <a href="https://github.com/DEAP/deap" target="_blank">DEAP</a> is a great Python framework for evolutionary algorithms, and there are tons of simulated annealing implementations floating around in every language imaginable.
+
+<br><br>
+
+But let's be real: for the vanilla hypergraph partitioning problem, you probably don't need metaheuristics. 
+Save them for when you've got something truly weird and the standard tools won't cut it.
 
 </section>
 
