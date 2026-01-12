@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Partitioning Hypergraphs: heuristic approaches</title>
+  <title>Partitioning Hypergraphs in DQC</title>
   <link rel="stylesheet" href="../style.css" />
   <script>
     MathJax = {
@@ -17,7 +17,7 @@
 </head>
 <body>
   <article>
-    <h1>Partitioning Hypergraphs: heuristic approaches</h1>
+    <h1>Partitioning Hypergraphs in DQC</h1>
     <p><em>?th of January 2026</em></p>
 
     <p>
@@ -145,7 +145,7 @@ Making hypergraph partitioning a more viable option, at least in the short term.
 
 <br><br>
 
-Yet I don't want to be too discouraging of hypergraph abstractions in DQC. 
+Yet, I don't want to be too discouraging of hypergraph abstractions in DQC. 
 They are a very natural way to represent crucial dependencies in distributed quantum computations, 
 which may not exist in the same form in classical distributed systems.
 In classical systems you have what we could call "classical dependencies", meaning you require the result from an operation before you complete the next.
@@ -161,8 +161,8 @@ Note that although this is my area of work at the moment, it doesn't have to be 
 <br><br>
 
 
-That being said, although I do have a soft spot for hypergraph abstractions, the hypergraph problem on the other hand will see the wrath of my hammer.
-It's first point is all good and dandy, we do want to minimize inter-partition hyperedges, they are expensive, consume resource, and introduce noise, all generally bad things.
+That being said, although I do have a soft spot for hypergraph abstractions, THE hypergraph problem will see the wrath of my hammer.
+It's first goal is all good and dandy, we do want to minimize inter-partition hyperedges, they are expensive, consume resource, and introduce noise, all generally bad things.
 <br> 
 But "balancing partitions"?!?!?! Why on earth do we care about balancing partitions? 
 Perhaps this hatred comes from my inate abuse of any computational resource I am presented with.
@@ -181,7 +181,7 @@ What we care about is:
 <ol>
 <li>  Minimizing the overall resource consumption (entanglement, qubits, time).</li>
 <li>  Maximizing the overall fidelity of the distributed computation.</li>
-<li>  <strong>Actually respecting the hardware constraints of the devices (qubit connectivity, gate sets, etc).</strong></li>
+<li>  <strong>Actually respecting the hardware constraints of the devices.</strong></li>
 </ol>
 Balancing is pointless, and irrelevant. 
 Respecting device capacities is not only mandatory and a necessity, but like THE WHOLE FREAKING POINT! 
@@ -207,7 +207,7 @@ NP-hard problem implies heuristics.
   They are often used for NP-hard problems where exact solutions are computationally infeasible.
     </div>
   
-Let's talk about them some of the most popular heuristics for hypergraph partitioning today.
+Let's talk about them some of the most popular heuristics for hypergraph partitioning today (namely the specific problem I defined above).
 
 <br>
 
