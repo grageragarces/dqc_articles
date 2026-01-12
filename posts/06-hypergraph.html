@@ -18,7 +18,7 @@
 <body>
   <article>
     <h1>Partitioning Hypergraphs: heuristic approaches</h1>
-    <p><em>?th of December 2025</em></p>
+    <p><em>?th of January 2026</em></p>
 
     <p>
     ABSTRACT
@@ -192,10 +192,62 @@ and whats worse they absolutely do not help in heterogeneous settups where we ma
 
 <br><br>
 <strong>TLDR:</strong> the hypergraph partitioning problem is not DQC, its a nice starting point, lets get over it. <br>
-Nonetheless, the point of this post <u>is</u> to explore this problem, so with my rant out of the way, let's talk about some of the cool maths and cs behind this problem in the context of DQC.
+Nonetheless, the point of this post <u>is</u> to explore hypergraph partitioning in DQC, so with my rant out of the way, let's talk about some of the cool maths and cs behind hypergraphs in DQC.
 
 </section>
 
+<section> 
+  <h2>Heuristics: State of the art</h2>
+NP-hard problem implies heuristics.
+
+    <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+  <strong>Heuristic:</strong> a practical approach to solving a problem that employs a method not guaranteed to be optimal or perfect. 
+  They can often have performance guarantees, but by definition they are not exact algorithms.
+  Heuristics can include approximation algorithms, probabilistic methods, greedy algorithms, and metaheuristics (overarching approaches that tell you how to explore the solution space rather than a specific method. e.g. Genetic Algorithms, Simulated Annealing).
+  They are often used for NP-hard problems where exact solutions are computationally infeasible.
+    </div>
+  
+Let's talk about them some of the most popular heuristics for hypergraph partitioning today.
+
+<br>
+
+<h3> Greedy and random: the simple path</h3>
+Operates directly on the original hypergraph without hierarchical decomposition.
+
+Greedy algorithms (e.g., greedy hypergraph growing)
+Random partitioning
+Spectral methods (eigenvalue-based)
+
+<h3>Iterations: local search</h3>
+Iteratively improves an existing partition by moving vertices between partitions.
+
+FM (Fiduccia-Mattheyses) - classic move-based refinement
+Kernighan-Lin variants
+k-way FM extensions
+
+<h3>Multilevel: the fancy pants solutions</h3>
+Three-phase approach: coarsen → partition coarse graph → uncoarsen with refinement
+
+KaHyPar (Karlsruhe Hypergraph Partitioner)
+hMETIS
+PaToH
+Zoltan
+
+<h3>Geometry: for the maths enthusiasts</h3>
+Exploit spatial information when vertex coordinates are available.
+
+Recursive coordinate bisection
+Space-filling curves (Hilbert, Morton)
+Geometric clustering
+
+<h3>Metaheuristics: black box magic</h3>
+Higher-level search strategies.
+
+Genetic algorithms
+Simulated annealing
+Ant colony optimization
+
+</section>
 
 <section> 
   <h2>Hypergraph partitioning in DQC today</h2>
@@ -206,31 +258,4 @@ alternatives (graphs, himanshu work, hungarian): but hypergraphs are the most fl
 my own work with HDHs into model agnosticity
 </section>
 
-<section> 
-    <h2>Hypergraph partitioning beyond DQC</h2>
-despite what I may lead you to believe hypergraph partitioning is much bigger than dqc
-examples alt applications
-</section>
 
-<section> 
-  <h2>Heuristics</h2>
-but as I said before the problem in NP-hard -> heuristic
-
-    <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
-  <strong>Heuristic:</strong> DEF
-
-    </div>
-  
-let's talk about them and limitations
-
-<br>
-
-<h3>Multilevel: KaHyPar, the hyper-metis</h3>
-
-<h3>FM</h3>
-
-<h3>Greedy</h3>
-
-<h3>Shot tech HDH</h3>
-
-</section>
