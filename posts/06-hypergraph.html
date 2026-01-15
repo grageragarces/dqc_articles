@@ -18,10 +18,13 @@
 <body>
   <article>
     <h1>Partitioning Hypergraphs in DQC</h1>
-    <p><em>?th of January 2026</em></p>
+    <p><em>15th of January 2026</em></p>
 
     <p>
-    ABSTRACT
+Hypergraphs are a natural way to encode multi-qubit dependencies.
+They have been widely used in DQC research to abstract and partition quantum computations.
+This partitioning has been done through heuristics designed to tackle the hypergraph partitioning problem. 
+In this post I will give a quick overview of the problem, its relevance to DQC, and some of the most popular heuristics used to tackle it.
     </p>
 
     <p><a href="../index.html">← Back to all posts</a></p>
@@ -50,10 +53,10 @@
 Hypergraphs are a mathematical structure that allow us to encode relationships between different entities.
 In distributed quantum computing, they are used to encode the relationships between qubits, such that when these are assigned to different quantum processors, 
 if they hold some connection between them (let's say through a CX gate in the computation), 
-this connection is respected accross the devices through whichever links connect the QPUs.
+this connection is respected across the devices through whichever links connect the QPUs.
 Meaning that if we allot groups of qubits needed for a distributed computation to two interconnected QPUs, 
 a hypergraph abstraction of this computation allows us to see which hyperedges separate both groups, 
-and thus signify the need for non-local operations (such as a teleportation or cat-entagler).
+and thus signify the need for non-local operations (such as a teleportation or cat-entangler).
 
 <br>
 This way of modeling distributed quantum computations has intertwined hypergraph theory with the field of DQC.
@@ -65,11 +68,11 @@ which is a very well known NP-hard problem in computer science, but may not be t
 <section> 
   <h2>Hypergraphs in DQC</h2>
   <!-- ARE WE REPEATING OURSELVES FROM THE ABSTRACT? -->
-Hypergraph based representations came into the Distributed Quantum computing sphere back in 2018 through Martinez & Heunen's <a href="https://arxiv.org/abs/1811.10972" target="_blank">Automated distribution of quantum circuits via hypergraph partitioning</a>.
-Hypergraphs serve as a very natural abstraction of the dependencies that must be maintained accross sub-workloads of a larger computation, 
+Hypergraph-based representations came into the Distributed Quantum computing sphere back in 2018 through Martinez & Heunen's <a href="https://arxiv.org/abs/1811.10972" target="_blank">Automated distribution of quantum circuits via hypergraph partitioning</a>.
+Hypergraphs serve as a very natural abstraction of the dependencies that must be maintained across sub-workloads of a larger computation, 
 which is a crucial part of the DQC problem: how do I cut up my computational pie such that my cut up pie is equivalent to my original?
 The original proposal was to represent qubits as the items/nodes of a hypergraph and quantum gates as the hyperedges connecting these qubits.
-Meaning that the computational dependencies generated multi-qubit gates, which are in essense entangling gates, were now encoded into this abstraction.
+Meaning that the computational dependencies generated multi-qubit gates, which are in essence entangling gates, were now encoded into this abstraction.
 
   <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
     <strong>Non-local gate:</strong> Entangling gate (meaning a multi-qubit gate, such as a CX or CZ) that operates on qubits located in different QPUs within a distributed quantum computing system.
@@ -87,7 +90,7 @@ Meaning that the computational dependencies generated multi-qubit gates, which a
     <figure style="max-width: min(100%, 600px); height: auto;text-align: center; margin: 20px 0;">
       <img src="../images/cat_tp.png" alt="CAT and TP implementation of CX gate" style="max-width: 80%; height: auto;">
       <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
-        Teleportation (TP) or cat-entagler (CAT) based implementations of non-local CX gates between qubits in different QPUs.
+        Teleportation (TP) or cat-entangler (CAT) based implementations of non-local CX gates between qubits in different QPUs.
         Taken from <a href="https://arxiv.org/pdf/2207.11674" target="_blank">AutoComm: A Framework for Enabling Efficient Communication in Distributed Quantum Programs</a>.
         Note the M gate corresponds to measurements and the squiggly line between qubits to pre-entangled shared pairs amongst QPUs.
         The need for these pre-shared entangled pairs is why entanglement generation and routing is such a crucial part of quantum networking research.
@@ -104,7 +107,7 @@ Meaning that the computational dependencies generated multi-qubit gates, which a
   </div>
 
 This encoding of computational dependencies is very useful because these inter-partition hyperedges (gates) can be "converted" into / interpreted as non-local gates,
-meaning that they can serve as the communication primitive (the quantum instructions/info sent accross a quantum channel) to interweave the smaller computations into the larger computation we were originally distributing.
+meaning that they can serve as the communication primitive (the quantum instructions/info sent across a quantum channel) to interweave the smaller computations into the larger computation we were originally distributing.
 Conveniently, there is a very famous problem associated to this: <strong>the hypergraph partitioning problem</strong>.
 
 </section>
@@ -112,8 +115,8 @@ Conveniently, there is a very famous problem associated to this: <strong>the hyp
 <section> 
   <h2>Hypergraph partitioning: the problem</h2>
 <!-- what the hypergraph problem is, how its not quite DQC but a starting point for the field, and how its hard -->
-The hypergraph partitioning problem is probably on of the most investigated NP-hard problems in computer science. 
-At its core, the problem consists on dividing the nodes of a hypergraph into disjoint subsets (partitions) such that:
+The hypergraph partitioning problem is probably one of the most investigated NP-hard problems in computer science. 
+At its core, the problem consists of dividing the nodes of a hypergraph into disjoint subsets (partitions) such that:
 <ol>
 <li> The number of <strong>hyperedges</strong> that <strong>connect</strong> nodes in different <strong>partitions</strong> (the cut size) is <strong>minimized</strong>.</li>
 <li> While ensuring that the <strong>partitions are balanced</strong> in size (i.e., each partition has roughly the same number of nodes).</li>
@@ -128,7 +131,7 @@ At its core, the problem consists on dividing the nodes of a hypergraph into dis
 
 Hypergraph partitioning has had countless applications in VLSI chip design, parallel scientific computing, movie recommendation systems, and DNA sequence assembly.
 Seeing why its NP hard is not too difficult, as it generalizes the graph partitioning problem, which is already NP-hard, 
-and its not too hard to see that the number of possible partitions grows exponentially with the number of nodes and hyperedges in the hypergraph.
+and it's not too hard to see that the number of possible partitions grows exponentially with the number of nodes and hyperedges in the hypergraph.
 
 <br><br>
 
@@ -151,12 +154,12 @@ which may not exist in the same form in classical distributed systems.
 In classical systems you have what we could call "classical dependencies", meaning you require the result from an operation before you complete the next.
 These can be modeled with graphs, as pairwise dependencies, and fit nicely in queueing systems.
 In DQC however, you have "quantum dependencies", meaning that certain operations require entanglement. 
-These dependies require both the previously mentioned classical dependency as well as the consumption (and thus availability) of a specific resource (entanglement).
+These dependencies require both the previously mentioned classical dependency as well as the consumption (and thus availability) of a specific resource (entanglement).
 They are not pairwise, as entanglement can exist between multiple qubits (GHZ states, W states, etc); 
 and furthermore they are absolutely everywhere. 
 Hypergraphs may be the way to go in DQC if we're talking about taking a massive monolithic circuit and mapping it down to a network of collaborating devices. 
-Note that although this is my area of work at the moment, it doesn't have to be the way foward, and it certainly isn't how we run things in classical distributed systems today. 
-(I keep talking about classical systems because they are the precursor to all of this DQC melarchy.)
+Note that although this is my area of work at the moment, it doesn't have to be the way forward, and it certainly isn't how we run things in classical distributed systems today. 
+(I keep talking about classical systems because they are the precursor to all of this DQC malarkey.)
 
 <br><br>
 
@@ -165,12 +168,12 @@ That being said, although I do have a soft spot for hypergraph abstractions, THE
 It's first goal is all good and dandy, we do want to minimize inter-partition hyperedges, they are expensive, consume resource, and introduce noise, all generally bad things.
 <br> 
 But "balancing partitions"?!?!?! Why on earth do we care about balancing partitions? 
-Perhaps this hatred comes from my inate abuse of any computational resource I am presented with.
+Perhaps this hatred comes from my innate abuse of any computational resource I am presented with.
 
     <figure style="max-width: min(100%, 400px); height: auto;text-align: center; margin: 20px 0;">
       <img src="../images/crazy.jpg" alt="8310m Jupyter notebook timer" style="max-width: 80%; height: auto;">
       <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
-        My current record taly (which I update when I remember to) of longest running Jupyter notebooks my poor laptop has to deal with <a href="https://bsky.app/profile/grageragarces.github.io/post/3m224vyj3cc2y" target="_blank">(Bluesky link)</a>. 
+        My current record tally (which I update when I remember to) of longest running Jupyter notebooks my poor laptop has to deal with <a href="https://bsky.app/profile/grageragarces.github.io/post/3m224vyj3cc2y" target="_blank">(Bluesky link)</a>. 
         8310m = 138.5 hours = 5.77 days
       </figcaption>
     </figure>
@@ -188,7 +191,7 @@ Respecting device capacities is not only mandatory and a necessity, but like THE
 We are distributing or talking about distribution today because we cannot and believe that we will not be able to fit large computations in a single QPU. 
 The whole field and concept of DQC starts from the idea of trying to find a solution to device capacities. 
 And yes, you could argue balanced partitions can be somewhat interpreted as "capacities", but really they don't ensure hard constraints, 
-and whats worse they absolutely do not help in heterogeneous settups where we may have different devices working together. 
+and what's worse they absolutely do not help in heterogeneous setups where we may have different devices working together. 
 
 <br><br>
 <strong>TLDR:</strong> the hypergraph partitioning problem is not DQC, its a nice starting point, lets get over it. <br>
@@ -210,7 +213,7 @@ NP-hard problem implies heuristics.
 Let's look into some of the most popular heuristics for hypergraph partitioning today (namely the specific problem I defined above).
 
 <br>
-<h3>Greedy and random: the simple path</h3>
+<h3> 1) Greedy and random: the simple path</h3>
 <em> The Simplest Solution is the Best Solution ~ Occam’s Razor</em>
 <br><br>
 
@@ -220,7 +223,7 @@ They're fast, straightforward, and surprisingly effective for quick-and-dirty pa
     <figure style="max-width: min(100%, 400px); height: auto;text-align: center; margin: 20px 0;">
       <img src="../images/hipos.webp" alt="Hungry Hungry Hippos the game" style="max-width: 80%; height: auto;">
       <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
-        The greedy logic personified: Hungry Hungry Hippos, the boardgame.
+        The greedy logic personified: Hungry Hungry Hippos, the board game.
       </figcaption>
     </figure>
 
@@ -257,7 +260,7 @@ For spectral methods, check out tools like <a href="https://networkx.org" target
 
 <br><br>
 
-<h3>Iterations: local search</h3>
+<h3> 2) Iterations: local search</h3>
 
 With simple but efficient out of the way, let's build our way into obscure complex stuff, starting at the simplest row: local search methods.
 Local search is all about starting with a solution (could be random, could be greedy, nobody seems to care even though it actually matters quite a lot) 
@@ -278,13 +281,13 @@ At that point you unlock everything and do it all over again until you stop seei
         style="max-width: 400px; max-height: 400px; height: auto; width: auto; object-fit: contain;">
   <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
     Hypergraph on the left, possible "gain lists" on the right for FM. 
-    Taken from <a href="https://limsk.ece.gatech.edu/book/slides/pdf/FM-partitioning.pdfg" target="_blank">Georgia tech lecture notes</a>.
+    Taken from <a href="https://limsk.ece.gatech.edu/book/slides/pdf/FM-partitioning.pdf" target="_blank">Georgia tech lecture notes</a>.
       </figcaption> 
 </figure>
 
 <br><br>
 
-What makes FM clever is that it allowstemporary bad moves, you might make the cut worse for a bit, but the algorithm can escape local minima this way 
+What makes FM clever is that it allows temporary bad moves, you might make the cut worse for a bit, but the algorithm can escape local minima this way 
 (at least theoretically).
 It's actually quite effective and forms the basis for most modern refinement algorithms.
 
@@ -306,71 +309,72 @@ Most serious hypergraph partitioning tools include FM-style refinement.
 
 <br><br>
 
-<h3>Multilevel: the fancy pants solutions</h3>
+<h3> 3) Multilevel: the fancy pants solutions</h3>
 Multilevel methods are where things get sophisticated. 
-These are the state-of-the-art approaches that dominate hypergraph partitioning competitions and real-world applications. 
-The core idea is brilliantly simple: if your hypergraph is too big and messy to partition directly, make it smaller first, partition that, and then carefully expand back to the original size while refining your solution.
+These are the state-of-the-art approaches that dominate hypergraph partitioning records and get used in real-world applications. 
+The core idea is quite simple: 
+if your hypergraph is too big and messy to partition directly, make it smaller first, partition that, and then carefully expand back to the original size while refining your solution.
 
 <br><br>
 
-The magic happens in three phases:
+The entire thing relies on this smaller partitioning being a good solution, but if you believe this (which based on their performance seems to be correct), 
+you've just got to follow three steps:
 
 <ol>
-<li><strong>Coarsening:</strong> Repeatedly merge nodes together to create smaller and smaller versions of your hypergraph. You're basically creating a hierarchy of progressively simpler problems. Common strategies include matching (pair up similar nodes and merge them) or heavy-edge coarsening (merge nodes connected by heavy hyperedges).</li>
+<li><strong>Coarsening:</strong> Repeatedly merging nodes together to create smaller versions of your hypergraph. 
+Common strategies include matching (pair up similar nodes and merge them) or heavy-edge coarsening (merge nodes connected by heavy hyperedges).</li>
 
-<li><strong>Initial partitioning:</strong> Once the hypergraph is small enough, partition it using a simple method (could be greedy, could be random, could even be exact if it's tiny enough). This gives you a rough solution.</li>
+<li><strong>Initial partitioning:</strong> Once the hypergraph is small enough (this is kind of arbitrary), 
+  you partition it using a simpler method (any of the above, FM and greedy are popular choices). 
+  This gives you the baseline solution.</li>
 
-<li><strong>Uncoarsening and refinement:</strong> Now reverse the coarsening process. At each level, "unmerge" the nodes and use a local search method (usually FM-style) to improve the partition. By the time you're back to the original hypergraph, you've got a highly optimized solution.</li>
+<li><strong>Uncoarsening with refinement:</strong> Now you've just got to reverse the coarsening process. But you get to make some smart decisions along the way.
+  At each level, you can "unmerge" nodes and use a local search method (usually FM) to improve the partition, meaning that you remap your super-node's nodes somewhat "smartly".
+  When you've made your way back, you're done.</li>
 </ol>
 
 <br>
 
-Why does this work so well? Because solving the problem at a coarse level gives you a good global view of the structure, while the refinement at each level handles the local details. 
-It's like sketching the outline of a drawing first, then filling in progressively finer details.
+As I said earlier, solving the problem at a coarse level seems to give us a good global view of the structure, and the further refinement at each level handles local sub-optimisations. 
+These methods basically sketch first, and paint later.
+They include:
 
 <br><br>
 
-<strong>KaHyPar</strong> (Karlsruhe Hypergraph Partitioner) is probably the most well-known multilevel tool today. 
-It's incredibly fast, produces high-quality partitions, and is actively maintained. 
-They've got multiple versions (KaHyPar-CA, KaHyPar-K, etc.) optimized for different scenarios.
-Check out their work at <a href="https://kahypar.org" target="_blank">kahypar.org</a> and their <a href="https://github.com/kahypar/kahypar" target="_blank">GitHub repo</a>.
+<strong>KaHyPar</strong> (Karlsruhe Hypergraph Partitioner), I did say we would get to him.
+KaHyPar (kahy for friends) is THE partitioner today.
+It's fast, produces cheap partitions, and is actively maintained.
+Under the hood, KaHyPar uses an <em>n-level hypergraph partitioning</em> strategy, where nodes are contracted very gradually, 
+preserving structural details, followed by adaptive (meaning it dynamically adjusts its strategy based on the contextual cost/structure it sees) 
+local refinement during uncoarsening.
+This allows it to optimize not just simple cut counts, but more expressive objectives such as connectivity and weighted communication costs.
+The community behind it has made multiple versions (KaHyPar-CA, KaHyPar-K, etc.) optimized for different scenarios.
+Check it out at <a href="https://kahypar.org" target="_blank">kahypar.org</a> and their <a href="https://github.com/kahypar/kahypar" target="_blank">GitHub repo</a>.
+This is the most likely to be the baseline in any DQC hypergraph partitioning work today.
 
 <br><br>
 
-<strong>hMETIS</strong> is an older classic from the late '90s that pioneered many multilevel techniques. 
-Still widely used and cited, though not as actively developed. 
-Available at <a href="http://glaros.dtc.umn.edu/gkhome/metis/hmetis/overview" target="_blank">UMN's METIS page</a>.
+<strong>hMETIS</strong> is an older classic that pioneered many multilevel techniques.
+Metis is basically KaHyPar but for graphs, and hMETIS extended metis' ideas to hypergraphs.
+Its approach relies on more aggressive multilevel coarsening, 
+rapidly collapsing nodes, followed by FM-style greedy refinement to minimize hyperedge cuts.
+This makes hMETIS fast and robust, but unlike KaHyPar it's not very flexible and commits to structural decisions very early.
+Still widely used and cited, it is not as actively developed (to my knowledge).
+Learn more at <a href="https://course.ece.cmu.edu/~ee760/760docs/hMetisManual.pdf" target="_blank">UMN's METIS page</a>.
 
-<br><br>
-
-<strong>PaToH</strong> (Partitioning Tool for Hypergraphs) is another heavyweight, particularly popular in scientific computing communities. 
-It's got a nice API and supports various hypergraph models.
-Find it at <a href="https://faculty.cc.gatech.edu/~umit/PaToH/" target="_blank">Ümit Çatalyürek's page</a>.
-
-<br><br>
-
-<strong>Zoltan</strong> is a parallel partitioning toolkit from Sandia National Labs that includes hypergraph partitioning among many other features. 
-It's designed for massive-scale parallel computing and integrates with MPI.
-Check out the <a href="https://github.com/sandialabs/Zoltan" target="_blank">GitHub repo</a>.
-
-<br><br>
-
-The multilevel approach is the gold standard for a reason—it consistently produces the best results for the standard hypergraph partitioning problem. 
-If you're serious about hypergraph partitioning, you're probably using one of these tools.
-
-<br><br>
-
-<h3>Geometry: for the maths enthusiasts</h3>
-Geometric methods are a bit of a different beast. 
-They only work when your hypergraph nodes have associated coordinates in some metric space—think physical locations, embeddings in vector space, or any situation where nodes have a meaningful geometric interpretation. 
+<h3> 4) Geometric: for the maths enthusiasts</h3>
+Geometric methods are a different beast. 
+They only work when your hypergraph nodes have associated coordinates in some metric space 
+(physical locations, embeddings in vector space, connectivity topology in a quantum chip/network, timesteps, ...). 
 When applicable, they can be extremely fast and produce intuitive partitions that respect spatial locality.
 
 <br><br>
 
-The classic approach is <strong>Recursive Coordinate Bisection (RCB)</strong>. 
-The algorithm is almost painfully simple: pick a coordinate dimension (x, y, or z), find the median value, and split the nodes into two groups based on that median. 
-Then recursively apply this to each partition until you've got the number of partitions you want. 
-It's incredibly fast (roughly O(n log n)) and works great when your problem has strong spatial structure.
+The classic approach is <strong>Recursive Coordinate Bisection (RCB)</strong>.
+You pick a coordinate dimension (x, y, or z), find the median value, and split the nodes into two groups based on that median. 
+Easy peasy right?
+You then recursively apply this to each partition until you've got the number of partitions you want. 
+It's FAST (we're talking O(n log n)) and works very well when your problem has strong spatial structure.
 
 <br><br>
 
@@ -379,86 +383,332 @@ RCB will naturally group nearby points together, which is exactly what you want 
 
 <br><br>
 
-<strong>Space-filling curves</strong> take things up a notch. 
-These use fancy curves like Hilbert or Morton (Z-order) curves that map multi-dimensional space onto a one-dimensional line while preserving locality. 
-You order all your nodes along this curve and then cut it into pieces—instant partitioning with good spatial properties. 
-Hilbert curves in particular are beloved by the parallel computing crowd because they have better locality preservation than Morton curves.
+<strong>Space-filling curves</strong> enable another strategy. 
+A space-filling curve is basically a continuous curve that passes through every point in a multi-dimensional space.
+Examples include Peano, Hilbert and Morton (Z-order) curves.
+They basically enable the mapping of multi-dimensional space onto a one-dimensional line while (approximately) preserving locality. 
+
+<figure style="text-align: center; margin: 20px 0;">
+  <img src="../images/curve.png" alt="Peano curve illustration" 
+        style="max-width: 400px; max-height: 400px; height: auto; width: auto; object-fit: contain;">
+  <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+    Illustration of a Peano space-filling curve, taken from <a href="https://en.wikipedia.org/wiki/Space-filling_curve" target="_blank">Wikimedia Commons</a>.
+    Each panel shows a single continuous line drawn on a 2D surface.
+    Although the line lives in two dimensions, it is still one long path that you can follow from start to end (1D).
+    As the resolution increases (left to right), the path weaves more densely and eventually visits every region of the square.
+    This provides a way to impose a one-dimensional ordering on two-dimensional space while largely preserving locality.
+      </figcaption> 
+</figure>
+
+The general idea is that within your curve you get to order all your nodes, 
+and then cut it into pieces—instant partitioning with good spatial properties. 
+Hilbert curves (in particular) are beloved by the parallel computing crowd because they have good locality preservation. 
 
 <br><br>
 
-The catch? Geometric methods completely ignore the actual hyperedge structure. 
-They only care about node coordinates. 
-This can be a blessing (super fast) or a curse (might create terrible partitions if the geometry doesn't align with the connectivity). 
-They're best used as either a very fast initial solution or for problems where geometry genuinely dominates the structure.
+Now these methods <em>only care</em> about geometry.
+They completely ignore the actual hyperedge structure, and
+only use node coordinates. 
+This can be a blessing (cause it's super fast), but it will be a curse if the geometry of your hypergraph doesn't align with the connectivity. 
+They're often used as a very fast initial solution or for problems where geometry genuinely dominates the structure.
 
 <br><br>
 
-For implementations, <a href="https://github.com/sandialabs/Zoltan" target="_blank">Zoltan</a> includes excellent RCB and Hilbert curve partitioning. 
-You can also find space-filling curve implementations in libraries like <a href="https://github.com/chrisjsewell/hilbertcurve" target="_blank">hilbertcurve</a> (Python) if you want to roll your own.
-
+<h3> 5) Metaheuristics: black box magic</h3>
+Metaheuristics are our final wild card.
+They can tackle any problem as long as you can define a cost function. 
+They're "meta" because they're higher-level (not because of facebook), meaning they 
+guide the search process rather than being specific algorithms. 
+As per the title, this includes our black boxes (ML, genetic algorithms, etc).
 <br><br>
 
-<h3>Metaheuristics: black box magic</h3>
-Metaheuristics are the wild cards of optimization—general-purpose search strategies that can tackle virtually any problem as long as you can define a cost function. 
-They're called "meta" because they're higher-level frameworks that guide the search process rather than being specific algorithms tied to hypergraph structure. 
-Think of them as black boxes: you feed in a solution representation and a quality metric, they shake things around using their strategy, and hopefully spit out better solutions.
-
-<br><br>
-
-<strong>Genetic Algorithms (GAs)</strong> are probably the most famous metaheuristic. 
-They mimic biological evolution: maintain a population of candidate partitions, combine good ones (crossover), randomly modify some (mutation), and let the best survive over generations. 
+<strong>Genetic Algorithms (GAs)</strong> were the first metaheuristic to be 
+<a href="https://arxiv.org/pdf/2311.18529" target="_blank">tested in DQC</a>.
+Before AI exploded, I like to think they were every tech bro's favorite way to play god.
+The idea is you're mimicking evolution by having a population of candidate solutions that evolve over time.
+They evolve through crossover, mutations and natural selection.
 For hypergraph partitioning, each "individual" is a partition, and the fitness function typically combines cut size and balance violations.
 
+<figure style="text-align: center; margin: 20px 0;">
+  <img src="../images/genes.png" alt="Crossover and mutation" 
+        style="max-width: 400px; max-height: 400px; height: auto; width: auto; object-fit: contain;">
+  <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+    Crossover and mutation.
+    Taken from <a href="https://www.researchgate.net/publication/381479172_Parameter_Setting_for_a_Genetic_Algorithm_Layout_Planner_as_a_Toll_of_Sustainable_Manufacturing?_tp=eyJjb250ZXh0Ijp7ImZpcnN0UGFnZSI6Il9kaXJlY3QiLCJwYWdlIjoicHVibGljYXRpb24ifX0" target="_blank">"Parameter Setting for a Genetic Algorithm Layout Planner as a Toll of Sustainable Manufacturing" (paper)</a>.
+      </figcaption> 
+</figure>
 <br><br>
 
-GAs can escape local optima by exploring many different regions of the solution space simultaneously. 
-The downside? They're slooooow. 
-Running hundreds or thousands of generations on large hypergraphs is computationally brutal, which is why they're rarely used in production systems for this problem.
+GAs have the power to escape local optima by exploring many different regions of the solution space simultaneously. 
+Which is lovely, but they're slooooow, 
+so rarely used in production systems.
 
 <br><br>
 
-<strong>Simulated Annealing</strong> takes inspiration from metallurgy. 
-Start with a random partition at high "temperature," repeatedly make random modifications, and accept worse solutions with some probability that decreases over time (the cooling schedule). 
-This lets you escape local optima early on while eventually settling into a good solution as the temperature drops.
-
-<br><br>
-
-It's simpler than GAs and can work quite well, but it's still pretty slow and requires careful tuning of the cooling schedule. 
-It's been applied to hypergraph partitioning, but again, not something you see in state-of-the-art tools.
+<strong>Simulated Annealing</strong> is probably a more familiar name to the quantum crown.
+The idea here is we start with a random partition at high "temperature," 
+repeatedly make random modifications, 
+and accept worse solutions with some probability that decreases over time (we're "cooling"). 
+This method also has the power to escape local optima early on, but it eventually settles into a good solution as the temperature drops.
+It's simpler than GAs but it still slow and requires careful tuning of the cooling schedule. 
 
 <br><br>
 
 <strong>Ant Colony Optimization</strong> is inspired by how ants find paths to food. 
 Virtual ants traverse the hypergraph, leaving "pheromone trails" that influence future ants. 
-Over time, good partitioning strategies accumulate stronger pheromone signals. 
-It's clever, but like the other metaheuristics, it's computationally expensive and doesn't exploit problem structure the way specialized algorithms do.
+It's once again computationally expensive and doesn't exploit problem structure the way specialized algorithms do.
 
 <br><br>
 
-The fundamental issue with metaheuristics for hypergraph partitioning is that they're too general. 
-They don't leverage the specific structure of hypergraphs the way multilevel methods or FM refinement do. 
+I should have probably titled this section "Ideas from nature, expensive and slow but cool sounding".
+The fundamental issue with metaheuristics for hypergraph partitioning is that they're too general: 
+they don't leverage the specific structure of hypergraphs the way multilevel methods or FM refinement do. 
 You're trading specialized efficiency for broad applicability. 
 They can work, and might even find interesting solutions in weird corner cases, but for the standard problem you're almost always better off with multilevel methods.
 
 <br><br>
 
-That said, metaheuristics shine when you have <em>additional constraints or objectives</em> that break the standard formulation—things that are hard to incorporate into traditional algorithms. 
-If you want to experiment, <a href="https://github.com/DEAP/deap" target="_blank">DEAP</a> is a great Python framework for evolutionary algorithms, and there are tons of simulated annealing implementations floating around in every language imaginable.
-
-<br><br>
-
-But let's be real: for the vanilla hypergraph partitioning problem, you probably don't need metaheuristics. 
-Save them for when you've got something truly weird and the standard tools won't cut it.
+That said, metaheuristics shine when you have <u>additional constraints/objectives</u> that break the standard formulation—things that are hard to incorporate into traditional algorithms. 
+For instance if you care about heterogeneous QPU capacities (<em>that's crazy, who would care about that</em>), 
+asymmetric communication costs, 
+time-dependent constraints, 
+or multi-objective trade-offs that mix fidelity, 
+latency, and cost into a single ugly objective, 
+metaheuristics let you throw all of that into the fitness function and just… search.
 
 </section>
 
 <section> 
-  <h2>Hypergraph partitioning in DQC today</h2>
-alternatives (graphs, himanshu work, hungarian): but hypergraphs are the most flexible
+  <!-- <h2>Hypergraph partitioning in DQC today</h2>
+
+I'm gonna do my best to give you a quick overview here, but tbh go check https://arxiv.org/abs/2404.01265 section 4.1.1. for a great overview (from 2024 so perhaps slightly out of date).
+  
+alternatives graphs - cheaper to partition (many devices can't do Toffoli anyways): but hypergraphs are the most flexible (see model agnostic stuff bellow)
+
+hungarian assignement: Hungarian Qubit Assigment (HQA) method for
+partitioning is developed by Escofet et al.,  -  P. Escofet, A. Ovide, C. G. Almudever, E. Alarc´ on, S. Abadal, Hun-
+garian qubit assignment for optimized mapping of quantum circuits on
+multi-core architectures, IEEE Computer Architecture Letters (2023).
+doi:10.1109/LCA.2023.3318857.
+
+J. M. Baker, C. Duckering, A. Hoover, F. T. Chong, Time-sliced quan-
+tum circuit partitioning for modular architectures, in: 17th ACM Int.
+Conf. on Computing Frontiers 2020, CF 2020 - Proceedings, Associa-
+tion for Computing Machinery, Inc, 2020, pp. 98–107. doi:10.1145/
+3387902.3392617.
+
+A. Pastor, P. Escofet, S. B. Rached, E. Alarc´ on, P. Barlet-Ros, S. Abadal,
+Circuit partitioning for multi-core quantum architectures with deep re-
+inforcement learning, arXiv preprint (2024). doi:10.48550/arXiv.
+2401.17976.
+
+Paper published: 2023 \\
+Tree-based Directed Acyclic Graph Partitioning for Quantum Circuits \cite{clark_tdag_2023}.\\
+Figure \ref{fig:TDAG_figures} depicts the logic of the decomposition of circuit \ref{circuit} following this technique.
+
+
+TDAG is a new technique born of quantum synthesis work at the Oak Ridge laboratory. It is also graph inspired, and similarly to time cutting implies a teledata minimization. The proposal \cite{clark_tdag_2023} seems to perform positively when compared to other quantum synthesis quantum circuit processing techniques, yet it needs to be explored within DQC before it can be fairly compared to the previously mentioned techniques.
+
+@inproceedings{clark_tdag_2023,
+	address = {New York, NY, USA},
+	series = {{GLSVLSI} '23},
+	title = {{TDAG}: {Tree}-based {Directed} {Acyclic} {Graph} {Partitioning} for {Quantum} {Circuits}},
+	isbn = {9798400701252},
+	shorttitle = {{TDAG}},
+	url = {https://dl.acm.org/doi/10.1145/3583781.3590234},
+	doi = {10.1145/3583781.3590234},
+	abstract = {We propose the Tree-based Directed Acyclic Graph (TDAG) partitioning for quantum circuits, a novel quantum circuit partitioning method which partitions circuits by viewing them as a series of binary trees and selecting the tree containing the most gates. TDAG produces results of comparable quality (number of partitions) to an existing method called ScanPartitioner (an exhaustive search algorithm) with an 95\% average reduction in execution time. Furthermore, TDAG improves compared to a faster partitioning method called QuickPartitioner by 38\% in terms of quality of the results with minimal overhead in execution time.},
+	urldate = {2024-10-08},
+	booktitle = {Proceedings of the {Great} {Lakes} {Symposium} on {VLSI} 2023},
+	publisher = {Association for Computing Machinery},
+	author = {Clark, Joseph and Humble, Travis and Thapliyal, Himanshu},
+	month = jun,
+	year = {2023},
+	pages = {587--592},
+}
 
 <br>
 
 my own work with HDHs into model agnosticity
 </section>
 
+ -->
+
+ <section>
+  <h2>Hypergraph partitioning (or perhaps its alternatives) in DQC today</h2>
+
+  <p>
+    I'm gonna do my best to give you a brief overview of alternative approaches to partitioning that have been developed specifically for DQC, 
+    but tbh if you're seriously exploring this go check 
+    <a href="https://arxiv.org/abs/2404.01265" target="_blank">"Review of Distributed Quantum Computing. From single QPU to High Performance Quantum Computing" (paper)</a>.
+    section 4.1.1. for a great overview (from 2024 so perhaps slightly out of date).
+    An important and very irritating note before we start: there are little to no cross-comparisons of these methods in the literature. 
+    They often use different benchmarks, metrics and comparison baselines.
+    This makes it really hard to say which method is "best" in any meaningful way (it is possible, but it would take a lot of work - I would forever adore you though, and perhaps more importantly you would make an awesome contribution to the field).
+  </p>
+
+  <h3>Graph-based and reduced abstractions</h3>
+
+  <p>
+    Simplify and conquer!
+    The reason why we build hypergraphs is mainly Toffoli gates (aka +2 qubit gates).
+    Fun fact, these are often not natively supported in hardware!
+    More often than not compilers decompose these multiway relationships into pairwise interactions (aka two qubit gates).
+    So why not simplify and <em>downgrade</em> our hypergraphs into graphs?
+    This leads to the graph partitioning problem, again NP-hard, but cheaper and faster to solve!
+  </p>
+
+
+  <h3>Assignment-based formulations</h3>
+
+  <p>
+    We have also seen people reframing partitioning as an <em>assignment</em> problem rather than a cut problem.
+    A good example is the 
+    <a href="https://arxiv.org/abs/2309.12182" target="_blank">Hungarian Qubit Assignment (HQA) method introduced by Escofet et al.</a>:
+    qubits are assigned to QPUs by solving a weighted matching problem that minimizes communication cost.
+    Which is conceptually very different from hypergraph partitioning, as:
+  <ul>
+    <li>You do not explicitly minimize cut hyperedges.</li>
+    <li>You directly optimize a cost matrix derived from circuit interactions and device constraints.</li>
+  </ul>
+
+  <p>
+    Advantages include the incorporation of:
+  <ul>
+    <li>Heterogeneous device capacities.</li>
+    <li>Asymmetric communication costs.</li>
+    <li>Fixed hardware topologies.</li>
+  </ul>
+
+  <p>
+    Downsides include: common loss of the global structural view that hypergraphs provide.
+  </p>
+
+  <h3>Time-aware and slicing-based methods</h3>
+
+  <p>
+    Some works 
+    <a href="https://arxiv.org/abs/2005.12259" target="_blank">(ex)</a> 
+    base themselves on the idea that
+     <em>not all dependencies exist at the same time</em>.
+    Gates are applied sequentially, they have timestamps/a temporal structure (from left to right in circuit diagrams).
+    Time-sliced partitioning methods exploit this temporal structure by
+    decomposing the circuit into temporal layers that are partitioned independently.
+    This aims to reduce peak communication requirements at the cost of increased coordination; 
+    and often leads to fewer simultaneous non-local operations,
+    which can be a big thing on real hardware (either due to resource costs - you may only have a limited number of entangling pairs available per time stamp - or error rates).
+  </p>
+
+<figure id="fig-timeslice-figures" style="text-align: center;">
+
+  <!-- Top row: two figures side by side -->
+  <div style="display: flex; justify-content: center; gap: 1.5em; flex-wrap: wrap;">
+
+    <div style="max-width: 400px;">
+      <img src="../images/timeslice_slicedcircuit.png"
+           alt="Time sliced circuit"
+           style="width: 100%; height: auto;">
+      <figcaption>Time sliced circuit</figcaption>
+    </div>
+
+    <div style="max-width: 400px;">
+      <img src="../images/timeslice_graph.png"
+           alt="Time sliced graph"
+           style="width: 100%; height: auto;">
+      <figcaption>Time sliced graph</figcaption>
+    </div>
+
+  </div>
+
+  <!-- Bottom row: single figure -->
+  <div style="max-width: 400px; margin: 2em auto 0 auto;">
+    <img src="../images/timeslice_slicedgraph.png"
+         alt="Time sliced graph (sliced)"
+         style="width: 100%; height: auto;">
+    <figcaption>Time sliced graph (sliced)</figcaption>
+  </div>
+
+  <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+    Conceptual example of how a time-sliced partitioning method works.
+    Top left: original circuit with time slices indicated by dashed lines.
+    Top right: corresponding time-sliced graph representation.
+    Bottom: partitioned time-sliced graph.
+  </figcaption>
+
+</figure>
+
+
+  <h3>DAG-based stuff</h3>
+
+  <p>
+    In a similar vein to time-aware methods, some have replaced hypergraphs
+    with circuit DAGs (Directed Acyclic Graphs).
+
+  <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+    <strong>Directed Acyclic Graphs:</strong> A graph (collection of nodes connected by edges) where edges have a direction (from one node to another) 
+    and there are no cycles (you can't start at one node and follow a path that leads back to it).
+    <figure style="text-align: center; margin: 20px 0;">
+  <img src="../images/graph.png" alt="Graph vs DAG illustration" 
+        style="max-width: 400px; max-height: 400px; height: auto; width: auto; object-fit: contain;">
+</figure>
+  </div>
+
+    <a href="https://dl.acm.org/doi/10.1145/3583781.3590234" target="_blank">Tree-based Directed Acyclic Graph (TDAG)</a> 
+    partitioning is a good example.
+    TDAG partitions circuits by recursively decomposing them into tree structures
+    and selecting cuts that minimize communication.
+  </p>
+
+  <h3>Learning-based approaches</h3>
+
+  <p>
+    Of course 
+    <a href="https://arxiv.org/abs/2401.17976" target="_blank">reinforcement learning and ML-based methods have also been explored</a>.
+    These approaches treat partitioning as a sequential decision problem
+    and learn policies that map circuit features to partitioning actions.
+    They are appealing because they can, in principle, optimize arbitrary objectives
+    and heterogeneous constraints (they are a type of metaheuristic).
+    But they are expensive to train, hard to interpret and generalize poorly outside their training distribution. 
+    Due to the lack of cross-comparisons between methods, it's unclear whether all these cost even lead to an outperformance of the cheaper heuristics mentioned above.
+    Yet (despite my personal skepticism about anything related to the word AI - do forgive me, it comes from ignorance and a dislike of snake oils which populate both the AI and quantum space), 
+    I don't think this avenue should be dismissed even if current models (which have gotten little attention) do not outperform simpler methods. 
+    In the classical world, learning-based methods have shown to be scalable and a reasonable path in related problems like graph partitioning and job scheduling 
+    <a href="https://proceedings.mlr.press/v80/dai18a.html" target="_blank">(ex)</a>.
+  </p>
+
+<h3>Where my own work fits</h3>
+
+<p>
+  My own ongoing work with  
+  <a href="https://grageragarces.github.io/HDH/" target="_blank">Hybrid Dependency Hypergraphs (HDHs)</a> 
+  sits in between all of this.
+  HDHs provide an abstraction that is:
+</p>
+
+<ul>
+  <li>
+    model-agnostic (meaning that it enables the abstraction of alternative quantum computational models such as MBQC (Measurement Based Quantum Computing),
+    which are the native operation set for some quantum computers, namely photonic quantum computers,
+    and are particularly natural for distributed settings since flying qubits are photons),
+  </li>
+  <li>
+    explicit about both quantum and classical dependencies (enabling partitioning strategies that exploit classical control flow,
+    which is typically far cheaper than consuming entanglement and dealing with quantum noise),
+  </li>
+  <li>
+    directed (capturing the flow of information and dependencies, similarly to DAG-based representations,
+    rather than treating the computation as an undirected connectivity problem).
+  </li>
+</ul>
+
+<p>
+  The goal behind HDHs is to build a common ground on which partitioning methods can be explored and compared consistently.
+  To support this, the project comes with a 
+  <a href="https://grageragarces.github.io/HDH/database/" target="_blank">public database of HDHs and their partitions</a>,
+  covering various workload origins (different benchmarking suites) and partitioning strategies (greedy, KaHyPar, random) 
+  such that we can maintain a leaderboard of partitioning methods for DQC in a 
+  standardized reasonable abstraction.
+</p>
+
+</section>
 
