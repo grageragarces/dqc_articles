@@ -248,6 +248,13 @@ And what beauties quantum computers are at generating randomness, are they not?
 
 <br><br>
 
+<!-- <strong>Spectral methods</strong> bring a dust of linear algebra into the mix. 
+These use eigenvalues and eigenvectors of matrices derived from the hypergraph (like the Laplacian) to find good partitions. 
+The basic idea: the eigenvector corresponding to the second smallest eigenvalue (the Fiedler vector) gives you a natural ordering of nodes, and you can cut along this ordering to create partitions. 
+It's mathematically neat but <u>expensive</u> for large hypergraphs (aka anything of interest).
+
+<br><br> -->
+
 If you want to play around with greedy methods, most hypergraph libraries include basic implementations. 
 For spectral methods, check out tools like <a href="https://networkx.org" target="_blank">NetworkX</a> (for graphs) or implement your own using numpy/scipy for the eigenvalue computations.
 
@@ -294,12 +301,6 @@ It's more complex but handles the multi-way case directly without having to do r
 
 There's also <strong>Kernighan-Lin</strong>, which is an older algorithm from the 1970s that works similarly but swaps pairs of nodes between partitions instead of moving single nodes. 
 It's slower than FM but sometimes finds better solutions because it considers pairwise moves.
-
-<br><br>
-<strong>Spectral methods</strong> bring a dust of linear algebra into the mix. 
-These use eigenvalues and eigenvectors of matrices derived from the hypergraph (like the Laplacian) to find good partitions. 
-The basic idea: the eigenvector corresponding to the second smallest eigenvalue (the Fiedler vector) gives you a natural ordering of nodes, and you can cut along this ordering to create partitions. 
-It's mathematically neat but <u>expensive</u> for large hypergraphs (aka anything of interest).
 
 <br><br>
 
