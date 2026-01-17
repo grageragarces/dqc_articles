@@ -248,17 +248,8 @@ And what beauties quantum computers are at generating randomness, are they not?
 
 <br><br>
 
-<!-- <strong>Spectral methods</strong> bring a dust of linear algebra into the mix. 
-These use eigenvalues and eigenvectors of matrices derived from the hypergraph (like the Laplacian) to find good partitions. 
-The basic idea: the eigenvector corresponding to the second smallest eigenvalue (the Fiedler vector) gives you a natural ordering of nodes, and you can cut along this ordering to create partitions. 
-It's mathematically neat but <u>expensive</u> for large hypergraphs (aka anything of interest).
-
-<br><br> -->
-
 If you want to play around with greedy methods, most hypergraph libraries include basic implementations. 
 For spectral methods, check out tools like <a href="https://networkx.org" target="_blank">NetworkX</a> (for graphs) or implement your own using numpy/scipy for the eigenvalue computations.
-
-<br><br>
 
 <h3> 2) Iterations: local search</h3>
 
@@ -307,9 +298,78 @@ It's slower than FM but sometimes finds better solutions because it considers pa
 Most serious hypergraph partitioning tools include FM-style refinement. 
 <a href="https://github.com/kahypar/kahypar" target="_blank">KaHyPar</a> uses heavily optimized FM variants, and you can find standalone implementations in libraries like <a href="https://github.com/UMESIOSS/hMETIS" target="_blank">hMETIS</a>.
 
+<h3>3) Spectral methods: the global view</h3>
+
+Local methods tweak a partition by moving a few nodes at a time.
+They are fast and myopic.
+Global methods do the opposite.
+They try to extract a global pattern first,
+and then cut along that pattern.
+
+A few variants exist
+(
+<a href="https://arxiv.org/abs/2105.04389" target="_blank">flow and cut relaxations</a>,
+<a href="https://www.nature.com/articles/s41598-024-55934-5" target="_blank">global inference</a>,
+etc),
+but I am just going to focus on spectral methods,
+to give you an intuitive idea of how global approaches work,
+and perhaps partially answer the question of whether
+we can hypergraph-partition with quantum computers
+(we probably can, it is probably not worth it, but hey I am about to use the word eigenvector!).
+
+<div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+  <strong>Eigenvector:</strong>
+  Given a matrix $A$, an eigenvector is a non-zero vector $v$ such that applying $A$ to $v$ only scales it,
+  $Av = \lambda v,$
+  where $\lambda$ is the corresponding <strong>eigenvalue</strong>.
+  In spectral partitioning, eigenvectors of graph or hypergraph Laplacians capture global structural patterns,
+  and eigenvalues quantify how prevalent those patterns are.
+</div>
+
+<strong>Spectral methods</strong> bring linear algebra into the mix.
+They use eigenvalues and eigenvectors of matrices derived from the hypergraph
+(typically some form of Laplacian)
+to find good partitions.
+The basic idea is that low-frequency eigenvectors encode global structure.
+In graph settings, the eigenvector associated with the second smallest eigenvalue
+(the Fiedler vector)
+induces a natural ordering of nodes,
+along which one can cut to form partitions.
+It is mathematically neat,
+but <u>expensive</u> for large hypergraphs
+(aka anything of interest).
+
 <br><br>
 
-<h3> 3) Multilevel: the fancy pants solutions</h3>
+Hypergraphs do not have a single universally agreed Laplacian.
+As a result,
+“spectral hypergraph partitioning” is really a family of choices.
+You first decide how to turn the hypergraph into something spectral methods can act on.
+Common options include:
+
+<ol>
+  <li>
+    <strong>Clique expansion:</strong>
+    turning each hyperedge into a clique in a graph.
+    This often leads to massive graphs
+    and tends to over-penalize large hyperedges.
+  </li>
+  <li>
+    <strong>Star expansion:</strong>
+    building a bipartite graph between nodes and hyperedges.
+    This grows only linearly in the number of incidences,
+    but you are now partitioning a different graph,
+    and mapping the result back is not always clean or structurally meaningful.
+  </li>
+  <li>
+    <strong>Direct hypergraph Laplacians:</strong>
+    defining operators directly from the incidence structure.
+    These avoid blow-ups,
+    but introduce normalization choices that materially affect the result.
+  </li>
+</ol>
+
+<h3> 4) Multilevel: the fancy pants solutions</h3>
 Multilevel methods are where things get sophisticated. 
 These are the state-of-the-art approaches that dominate hypergraph partitioning records and get used in real-world applications. 
 The core idea is quite simple: 
@@ -362,7 +422,7 @@ This makes hMETIS fast and robust, but unlike KaHyPar it's not very flexible and
 Still widely used and cited, it is not as actively developed (to my knowledge).
 Learn more at <a href="https://course.ece.cmu.edu/~ee760/760docs/hMetisManual.pdf" target="_blank">UMN's METIS page</a>.
 
-<h3> 4) Geometric: for the maths enthusiasts</h3>
+<h3> 5) Geometric: for the maths enthusiasts</h3>
 Geometric methods are a different beast. 
 They only work when your hypergraph nodes have associated coordinates in some metric space 
 (physical locations, embeddings in vector space, connectivity topology in a quantum chip/network, timesteps, ...). 
@@ -414,7 +474,7 @@ They're often used as a very fast initial solution or for problems where geometr
 
 <br><br>
 
-<h3> 5) Metaheuristics: black box magic</h3>
+<h3> 6) Metaheuristics: black box magic</h3>
 Metaheuristics are our final wild card.
 They can tackle any problem as long as you can define a cost function. 
 They're "meta" because they're higher-level (not because of facebook), meaning they 
