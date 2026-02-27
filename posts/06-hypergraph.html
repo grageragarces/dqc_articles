@@ -129,6 +129,17 @@ At its core, the problem consists of dividing the nodes of a hypergraph into dis
       </figcaption>
     </figure>
 
+
+  <div style="background-color:#ffedeb; border-left:4px solid #e6857c; padding:10px 15px; margin:10px 0;">
+    <strong>Note:</strong> You could argue that this is the Balanced Hypergraph Partitioning problem (BHP) rather than the Hypergraph Partitioning problem (HP).
+    You would be correct. 
+    But the whole point of this article is to talk about how Hypergraph Partitioner solvers are used in DQC, 
+    and today in DQC we don't actually use HP solvers, 
+    we use BHP solvers (they are faster due symmetry breaking - the balance constraints reduce the search space in partitioning problems).
+    This is why I will be using the terms interchangeably, even though they are technically different problems 
+    (HP does not require balanced partitions, while BHP does).
+  </div>
+
 Hypergraph partitioning has had countless applications in VLSI chip design, parallel scientific computing, movie recommendation systems, and DNA sequence assembly.
 Seeing why its NP hard is not too difficult, as it generalizes the graph partitioning problem, which is already NP-hard, 
 and it's not too hard to see that the number of possible partitions grows exponentially with the number of nodes and hyperedges in the hypergraph.
