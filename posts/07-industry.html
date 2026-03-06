@@ -18,7 +18,7 @@
 <body>
   <article>
     <h1>The Distributed Quantum Computing industry</h1>
-    <p><em>??th of February 2026</em></p>
+    <p><em>??th of March 2026</em></p>
 
     <p>
 abstract
@@ -28,24 +28,137 @@ abstract
  
 <section>
 
-aaa
-<br>
+<section>
 
-Note the categorization bellow is subjective to what I believe to be these companies main forte. 
-They may sometimes also participate in the "other side", for instance Wellinq has dabled in experimental exploration but their main thing is code.
+Distributed quantum computing is no longer a purely academic idea. 
+Over the past few years, we've witnessed the arrival of a growing industrial ecosystem 
+exploring how quantum processors might eventually operate as networked systems rather than isolated machines.
+
+Some players are focusing entirely on the infrastructure required to interconnect quantum devices. 
+Others approach the problem from the software side, building compilers, orchestration layers, and distributed execution frameworks. 
+Meanwhile, large technology companies are positioning themselves to provide the networking backbone that a future quantum internet may require.
+
+In this post I will attempt to capture a screenshot of the newly emerging Distributed Quantum Computing industry. 
+
+The categorization below reflects my own interpretation of each company's main focus. 
+In practice, the boundaries are blurry. 
+Many organizations work across multiple layers of the stack, 
+e.g. hardware companies are also developing software tools.
+
+Let's dive in.
 </section>
+
 
 <section> 
   <h2>Pure play DQC</h2>
+Pure play DQC companies are those whose primary mission is to build the hardware and software infrastructure for distributed quantum computing / 
+related applications such as the quantum internet. 
+They can include both quantum networking and quantum computing companies. 
+I divide them into two teams: hardware and software.
 
   <h3>Hardware</h3>
 
   <h4>Qunnect</h4>
   <!-- image: Insert gotham announcement -->
+<figure style="max-width: min(100%, 800px); height: auto;text-align: center; margin: 20px 0;">
+      <img src="../images/qgotham.png" alt="KaHyPar hypergraph partitioning visualisation" style="max-width: 80%; height: auto;">
+      <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+        Portion of the GothamQ network created by Qunnect and Cisco in New York City. 
+        The nodes are connected by 17.6 km of standard telecom grade fiber cable that run under the city streets with all the potential noise sources of a city. 
+        Qunnect claims this network marks the movement of quantum networking devices out of the lab to real industrial applications world (from what I gather, they are right).
+        Taken from <a href="https://quantumcomputingreport.com/qunnect-and-cisco-demonstrate-quantum-entanglement-over-a-quantum-network-in-new-york-city/" target="_blank">Quantum Computing Report by GQI</a>.
+      </figcaption>
+</figure>
+<p>
+Qunnect is the first quantum networking infrastructure company I even came accross, and perhaps one of the very first in the field.
+
+It's a Brooklyn startup aiming to build deployable hardware capable of distributing entanglement over existing fiber networks (aka they do quantum networking). 
+They are prettu focused on real world deployability, a lot of their hardware operates at room temperature 
+and is designed to integrate with standard telecommunications infrastructure rather than laboratory environments.
+
+Their main product line, the <em>Carina</em> suite, bundles the core components required to run a quantum network into rack-mountable units. 
+This includes entangled photon sources, quantum memory, photon detectors, synchronization electronics and control software. 
+In essence, the goal is to make quantum networking hardware look and behave like standard telecom equipment.
+
+Over the past few years Qunnect has focused heavily on field demonstrations. 
+Their GothamQ network in New York distributes entanglement across 17.6 km of deployed fiber connecting sites in Brooklyn and Manhattan. 
+The system combines Qunnect’s hardware with Cisco’s orchestration software and has demonstrated metro-scale entanglement swapping under real urban conditions.
+
+Beyond New York, their technology is also being tested in Berlin with Deutsche Telekom’s T-Labs, at CERN’s quantum networking laboratory, and in several US research testbeds.
+
+The company is still relatively small (I believe under 50 employees) and has raised roughly $20M in funding across funding rounds, 
+but it has positioned itself as one of the most visible players trying to move quantum networking out of physics labs and into operational infrastructure, 
+collaborating with giants such as Cisco and Deutsche Telekom.
+
+</p>
 
   <h4>Nu Quantum</h4>
+
+<p>
+The apple of everyone’s eye in the distributed quantum computing space. 
+Nu Quantum is currently the most heavily funded startup in this part of the industry and, 
+perhaps surprisingly it is European.
+
+  </p>
+
+  <figure style="max-width: min(80%, 600px); height: auto;text-align: center; margin: 20px 0;">
+      <img src="../images/nuq60.png" alt="KaHyPar hypergraph partitioning visualisation" style="max-width: 80%; height: auto;">
+      <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+        60 million dollars raised by Nu Quantum in their latest round. 
+        Taken from <a href="https://www.nu-quantum.com/news/nu-quantum-raises-60m-series-a-in-largest-financing-round-for-quantum-computer-networking" target="_blank">Nu Quantum News</a>
+      </figcaption>
+  </figure>
+
+More focused on inter-quantum computer networking than long-distance quantum communication, 
+Nu Quantum is a Cambridge-based startup developing hardware. 
+They are betting for that future hardware to be distributed and making some sweet marketing claims around it. 
+
+</p>
   <!-- image: Inset Carmen quote on billion dolar industry + 60M round announdement -->
-   talk about ec work
+  <figure style="max-width: min(80%, 1000px); height: auto;text-align: center; margin: 20px 0;">
+      <img src="../images/nuq.png" alt="KaHyPar hypergraph partitioning visualisation" style="max-width: 80%; height: auto;">
+      <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+        Carmen Palacios, CEO of Nu Quantum, on the potential of the DQC industry back in January 2026.
+        Taken from <a href="https://sifted.eu/articles/carmen-palacios-berraquero-nu-quantum-interview" target="_blank">Sifted news</a>.
+      </figcaption>
+  </figure>
+
+<p>
+
+To enable this the company is developing what they call a <em>Quantum Networking Unit</em> (QNU). 
+The device effectively acts as a network interface for quantum computers, converting stationary qubits into photonic qubits that can be transmitted through optical fibers and used to generate entanglement between processors.
+In other words, they are trying to build the quantum equivalent of a network card. 
+Just like classical servers use network interfaces to communicate inside a datacenter, future quantum processors may rely on QNUs to connect to other quantum processors through photonic links.
+
+Nu Quantum does not build the processors themselves. 
+Instead they focus on the photonic interconnect layer that allows those processors to talk to each other. 
+Their hardware is designed to interface with a range of qubit platforms and is currently being explored with several hardware partners including Rigetti and Oxford Ionics, as well as within the UK National Quantum Computing Centre ecosystem.
+
+The company has grown rapidly over the past few years within the Cambridge quantum ecosystem and now employs roughly on the order of a hundred people. 
+Alongside strong UK backing they have also received support from European initiatives and Spanish innovation programs, recently expanding operations to Madrid.
+They also have ties with Cisco, BT, Amadeus Capital Partners, IQ Capital and Tokyo Electron.
+
+Interestingly, Nu Quantum is also among the few industrial groups exploring how quantum error correction might work in distributed architectures (they love their Floquet codes). 
+</p>
+
+<h4>QphoX</h4>
+
+But what do I do if my qubits (ehem ehem superconducting) don't like to be converted into photons (or, you know, emit them naturally when de-exciting)? 
+
+Most quantum networking proposals rely on optical photons traveling through fiber. 
+Platforms such as trapped ions or neutral atoms can naturally emit photons and are therefore relatively easy to integrate into photonic networks. 
+Superconducting qubits, however, operate in the microwave domain. 
+They communicate using microwave photons which cannot travel long distances and are extremely sensitive to thermal noise. 
+This makes direct networking of superconducting processors essentially impossible without an intermediate conversion step.
+
+In comes QphoX, a Dutch spinout from TU Delft (arguably one of, if not the best, schools out there for quantum networking). 
+QphoX aims to build quantum transducers capable of converting microwave photons into optical photons and back again. 
+Their devices rely on optomechanical systems that couple microwave resonators, mechanical oscillators and optical cavities to coherently convert quantum signals between the two regimes. 
+Aka they are trying to connect superconducting qubits to quantum networks (aiming to overcome perhaps the only caveat on the road to field monopoly for superconducting qubits). 
+
+The company employs over 150 people (I can't quite tell how many are permanent) 
+and has reached about $26 million in funding, but has quickly attracted attention from several hardware groups exploring distributed architectures. 
+Honestly no wonder, without this type of tech superconducting qubits can say goodbye to scalability.
 
   <h3>Software</h3>
 
@@ -68,19 +181,36 @@ They may sometimes also participate in the "other side", for instance Wellinq ha
   <h4>Xanadu</h4>
   claim 1st dqc computer, true? - probs overstated
 
+  <h4>PsiQuantum</h4>
+  fault-tolerant architecture implicitly assumes photonic networking. - not enough explore more
+  do they claim dqc??
+
+
   <h3>Photonic Inc</h3>
   took me by crazy surprise a few weeks ago 
 
-  <!-- -> CHECK NOTES PRESENTATION Caitlin: who else claims DQC  -->
+  <h3>IONQ</h3>
+  Acquired networking and aiming for dqc setup 
+  https://www.ionq.com/news/ionq-announces-intention-to-acquire-lightsynq-expediting-quantum-computing 
+
 
 </section>
 
 <section> 
   <h2>Giants stringing DQC</h2>
   <h3>Cisco</h3>
-  <!-- image: add shots of nu quantum, ibm, and qunnect collab -->
+  big collaboratior: nu quantum, ibm, and qunnect collabs 
+  - defo seems to wanna be the cisco of the quantum era (haha pun)
+
+  it is the place I started my journey thus I have a lot of love for the company and researchers there 
+  but that feels like it was eons ago and all in the the plantilla has seen a lot of changes 
+  so like many of you I am just privy to the public info 
+  let's dive into it:
+
   explain how the cisco R&D offshot is kinda separate and they do both q and ai
   <!-- image: add quote of the r&d guy saying quantum is becoming a bigger and bigger thing for them -->
+
+  they have the cali lab - where they have output: 1 2 3
   mention what they have and that ahem ahem even if U asked for it still not available
 
   <h3>Nvidia</h3>
@@ -89,11 +219,33 @@ They may sometimes also participate in the "other side", for instance Wellinq ha
   
   <h3>IBM</h3>
     clearly needs it - goal since heron, has openly collaborated with Cisco
-  
-  <h3>J</h3>
+
+    <h3>Toshiba</h3>
+    Oh how they love their QKD
+
+    " 
+    We’re Quantum
+Security Pioneers
+
+Toshiba has been at the forefront of quantum computing technology since 1999. Our solutions underpin the world’s first quantum-secured metro network, and we’ve created a quantum-safe communication platform that makes existing data-carrying networks safe from attack by quantum computers, without any compromise to performance.
+
+We’ve achieved a series of world firsts in quantum technology deployment, developing quantum-safe and future-proof network communications infrastructures that can protect data from any threat – even those posed by quantum computers.
+" - quote taken directly from theyr website: https://www.toshiba.eu/quantum/ 
+
+it is clear they are pouring £££ in the cambridge labs but the question of whereas QKD is the strat arises 
+the XXX INSERT THING US GOV SAYING QKD NOT PATH FOWARD XXX is still very much in the air, 
+and altho I personally find it a snake eating logic the sentiment remains that quantum networking doesn't want to stay in the QKD world.
+
+  <h3>Fujitsu</h3>
   focused more on collab q and classical devices
 
   <h3>Junyper??</h3> -- still looking into this??
+clearly something is there: https://www.juniper.net/documentation/us/en/software/junos/pki/topics/concept/get-started-with-pqc.html - even if just crypto??
+
+
+<h3>BT</h3>
+I keep meeting the BT people at NQCC Hackathons (explain briefly what that is) 
+so i digged a bit into their quantum range 
 
 </section>
 
