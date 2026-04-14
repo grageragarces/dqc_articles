@@ -54,7 +54,7 @@
         and if you're interested in that I recommend reading some of my previous blog posts.
         But the name of the game today is talking about a very interesting question that arose in my head about a year ago
         and that I've been exploring from various angles: in this setting where we have a computation
-        that is going to have to be distributed,
+        that will need to be distributed,
         how do we think about optimisations that reduce the cost of running this computation in a quantum setting?
         This could be circuit optimisation, this could be error mitigation, this could be error correction...
         all these things that need to exist in the pipeline for quantum software
@@ -102,7 +102,7 @@
         But then with local encoding,
         we're probably going to end up with smaller computations that these processes need to work with,
         which means we're probably going to enable much faster optimisations that are parallelisable and that are tractable.
-        A really big thing especially in circuit optimisation is that it's really difficult to get circuit optimisation
+        The key challenge in circuit optimisation is that it's really difficult to get circuit optimisation
         to be tractable and actually work unless you're working with small circuits —
         that's why you see so many companies selling AI/ML-based circuit optimisation,
         because at large scales it's kind of unreasonable.
@@ -111,8 +111,7 @@
       </p>
 
       <p>
-        Now another thing that I expect local encoding to also be good at
-        is accommodating heterogeneous quantum networks that have QPUs coming from different hardware or of different sizes.
+        Local encoding is also likely well-suited to accommodating heterogeneous quantum networks that have QPUs coming from different hardware or of different sizes.
         If we have a setup where all devices are different,
         we can't really have hardware-aware optimisations when doing global encoding.
         So local encoding could enable that final step towards optimisations
@@ -122,7 +121,7 @@
       </p>
 
       <p>
-        So with this idea in mind, I kind of set myself three goals that I wanted to test these encodings against.
+        So with this idea in mind, I set myself three goals that I wanted to test these encodings against.
         The first was: how fast is the compilation of the encoding compared to the alternative in a distributed setting —
         so that would mean, for instance, how fast is a global circuit optimisation versus a local circuit optimisation?
         The second would be: which encoding provides the minimal resource usage?
@@ -134,7 +133,7 @@
         and that means that when we partition it we might actually see a reduction
         in the number of non-local gates we need to perform to complete the computation,
         compared to if we did a local encoding and only considered optimisation afterwards.
-        And finally, my third and final goal is simply that the optimisation actually yields a non-trivial result.
+        My third and final goal is simply that the optimisation actually yields a non-trivial result.
         If the input is too large and it returns things completely unchanged, there's no point.
       </p>
 
@@ -175,7 +174,7 @@
       <h3>Circuit optimisation</h3>
 
       <p>
-        The second thing has been another paper, which is currently under review, that explores circuit optimisation.
+        The second avenue has been another paper, which is currently under review, that explores circuit optimisation.
         I'm not going to talk about it too much right now simply because it's under review,
         but I think we also found some interesting results
         that aren't necessarily the same ones we found with error mitigation.
@@ -225,7 +224,7 @@
         and ensure that all the investment that's gone into them is well exploited.
       </p>
 
-      <p><em>P.S: the amount of "so"'s I have taken out of this text is nuts.</em></p>
+      <p><em>P.S. the amount of "so"'s I have taken out of this text is nuts.</em></p>
 
     </section>
 
