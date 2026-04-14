@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global versus Local Encodings for DQC</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <article>
+    <h1>Global versus Local Encodings for DQC</h1>
+    <p><em>14th of April 2026</em></p>
+
+    <p>
+      When distributing a quantum computation, should optimisations be applied before or after partitioning? The answer might matter quite a lot.
+    </p>
+
+    <p><a href="../index.html">← Back to all posts</a></p>
+
+    <section>
+
+      <p>
+        Hey there!
+        Today I'm doing a bit of a different blog post... because I'm actually dictating it!
+        The reason why I'm doing this is because I'm attending QCTip at the end of the month, presenting a poster titled "Global versus Local Encodings for DQC".
+        I thought it'd be interesting to make a blog post about it, plus I kinda have to practice presenting the idea orally anyway, so you know, two birds one stone.
+        So let's see how my normal speaking vocabulary translates to a blog situationship!
+      </p>
+
+      <p>
+        <h2>Encodings?</h2>
+
+    <div style="background-color: #f7a98d; border-left: 4px solid #f0c040; padding: 12px 18px; margin: 20px 0; border-radius: 4px;">
+        <strong>Disclaimer:</strong> I forgot the word "encoding" means something different for Error Correction people! SORRY (not sorry).
+    </div>
+
+        Let's set the background: if you've read this blog before,
+        you know that I work in distributed quantum computing,
+        specifically on this problem where you are given a quantum computation (this might be a circuit or another type of computation)
+        and you abstract it to some sort of structure that showcases the emergent dependencies within the computation
+        (usually we translate it to a hypergraph or to a graph).
+        These abstractions showcase all the points at which you could separate your computation
+        and what type of resources you need to expend in order to still perform it.
+        You then take this structure, cut it up / partition it and map those partitions to devices that exist in a network.
+        Those devices are quantum computers connected through a quantum and classical network.
+        The main idea is that you have this pipeline going from the full quantum computation
+        to a map of how that computation is implemented across multiple quantum devices
+        that are not individually capable of completing it on their own,
+        but that can collaborate to complete it.
+      </p>
+
+      <p>
+        Now this is a hard problem to solve.
+        There's a lot of interesting research on its characteristics,
+        and if you're interested in that I recommend reading some of my previous blog posts.
+        But the name of the game today is talking about a very interesting question that arose in my head about a year ago
+        and that I've been exploring from various angles: in this setting where we have a computation
+        that is going to have to be distributed,
+        how do we think about optimisations that reduce the cost of running this computation in a quantum setting?
+        This could be circuit optimisation, this could be error mitigation, this could be error correction...
+        all these things that need to exist in the pipeline for quantum software
+        in order for it to be fault tolerant, in order for it to be as cheap as it can be, as fast as it can be.
+      </p>
+
+      <p>
+        There are pretty much two options (and then a third option which is a combination of both).
+        The first option is we apply these optimisations before we distribute:
+        we apply them on the overall computation and then abstract to a hypergraph, partition, and map.
+        Or we do it after, meaning we leave the original computation as it is,
+        cut it up across the different devices,
+        and then let every individual device optimise its own sub-circuit
+        (whether that's minimising the number of qubit gates, implementing error mitigation),
+        we just let them do their thing.
+        Obviously the hybrid approach is just doing it before and after.
+      </p>
+
+      <p>
+        And what I've been really curious about is trying to answer where in this pipeline these optimisations should come in, because you know,
+        the answer might not be the same for circuit optimisation that is trying to reduce gate counts as it is for error correction.
+        But either way: should we apply these things in a global sense, meaning we do it before we partition and before we distribute?
+        Or should we do it in a local sense? That's what global and local encoding means to me.
+      </p>
+
+      <div style="background-color: #fff9c4; border-left: 4px solid #f0c040; padding: 12px 18px; margin: 20px 0; border-radius: 4px;">
+        <strong>Global encoding:</strong> the optimisation/correction is performed on the <em>entire</em> computation prior to partitioning.
+      </div>
+
+      <div style="background-color: #fff9c4; border-left: 4px solid #f0c040; padding: 12px 18px; margin: 20px 0; border-radius: 4px;">
+        <strong>Local encoding:</strong> the optimisation/correction is performed on the <em>sub-computations</em> post partitioning.
+      </div>
+
+      <p>
+        My initial theory is that there would be upsides and downsides to either.
+        For global encoding, I would assume that unlike with local encoding, I would be able to be globally aware — what does that mean?
+        Well, we might have some optimisations that require capturing reductions that are higher level in a sense,
+        spanning quite a large part of the computation,
+        that might be missed if we cut it up beforehand
+        (things we cannot really protect against unless we're looking at the computation globally).
+        And that would obviously be missed in local encoding.
+      </p>
+
+      <p>
+        But then with local encoding,
+        we're probably going to end up with smaller computations that these processes need to work with,
+        which means we're probably going to enable much faster optimisations that are parallelisable and that are tractable.
+        A really big thing especially in circuit optimisation is that it's really difficult to get circuit optimisation
+        to be tractable and actually work unless you're working with small circuits —
+        that's why you see so many companies selling AI/ML-based circuit optimisation,
+        because at large scales it's kind of unreasonable.
+        This is a really really difficult problem.
+        I worked on it at Quantinuum for three months last year and let me tell you it's harddd.
+      </p>
+
+      <p>
+        Now another thing that I expect local encoding to also be good at
+        is accommodating heterogeneous quantum networks that have QPUs coming from different hardware or of different sizes.
+        If we have a setup where all devices are different,
+        we can't really have hardware-aware optimisations when doing global encoding.
+        So local encoding could enable that final step towards optimisations
+        (whether that's circuit optimisation or things like error mitigation)
+        being hardware-aware in a sense that global encoding probably cannot.
+        How likely we are to actually exist in settings where we have these types of networks is a different question.
+      </p>
+
+      <p>
+        So with this idea in mind, I kind of set myself three goals that I wanted to test these encodings against.
+        The first was: how fast is the compilation of the encoding compared to the alternative in a distributed setting —
+        so that would mean, for instance, how fast is a global circuit optimisation versus a local circuit optimisation?
+        The second would be: which encoding provides the minimal resource usage?
+        That can be the actual total compute time of the computation, the number of qubits,
+        the number of gates the computation is using,
+        and things like the entanglement consumed through non-local operations.
+        For instance, if we optimise a quantum circuit before we partition it,
+        we're going to reduce the number of gates,
+        and that means that when we partition it we might actually see a reduction
+        in the number of non-local gates we need to perform to complete the computation,
+        compared to if we did a local encoding and only considered optimisation afterwards.
+        And finally, my third and final goal is simply that the optimisation actually yields a non-trivial result.
+        If the input is too large and it returns things completely unchanged, there's no point.
+      </p>
+
+    </section>
+
+    <section>
+      <h2>Three avenues</h2>
+
+      <p>
+        So far this research has led me to 3 different avenues,
+        one for each of the optimisation and cost reduction ideas I've discussed.
+      </p>
+
+      <h3>Error mitigation</h3>
+
+      <p>
+        The first has been a paper titled "Distributed Quantum Error Mitigation: Global and Local Encodings",
+        which is going to be presented at INFOCOM'S QUNAP later this year.
+        This paper basically explores how zero noise extrapolation (ZNE) performed on certain quantum algorithms
+        compares under both encodings.
+        It led to some very interesting results: it basically pointed to the fact that
+        for this specific error mitigation technique, global encoding outperforms local encodings.
+        Nonetheless, very counterintuitively, global encodings are much less stable,
+        meaning their results are much more variable in terms of how much they help or don't help,
+        compared to local encodings.
+        So there is a dichotomy between stability and improved performance.
+        Not to say that local encodings don't perform well —
+        it might actually be that local encodings are a better long-term solution for this specific technique —
+        but we probably have to explore more algorithms and expand on it.
+        This was very exciting for me because it's my first published paper!
+        But I still think there's quite a lot to explore in the space.
+        We have to look at other techniques and look at more algorithms.
+        The research is purely empirical, mostly because I have absolutely no idea
+        how you could really answer this question from a theoretical perspective.
+        I would be very interested in seeing any contributions exploring this space.
+      </p>
+
+      <h3>Circuit optimisation</h3>
+
+      <p>
+        The second thing has been another paper, which is currently under review, that explores circuit optimisation.
+        I'm not going to talk about it too much right now simply because it's under review,
+        but I think we also found some interesting results
+        that aren't necessarily the same ones we found with error mitigation.
+        This was actually a collaboration,
+        and interestingly in this paper we also explore a hybrid option
+        (meaning doing both global and local encodings) and you know,
+        kind of as we expected, a hybrid option offers the best of both worlds,
+        but it comes at a very high cost that might not be worth it depending on what your goals are for the system.
+        For instance, if you don't actually care that much about a 2% difference in the number of non-local gates
+        you're going to get, but you do care about your pipeline taking an extra 40 minutes,
+        maybe hybrid is not the way to go.
+        There is no easy and cheap solution that gives you the best of both worlds.
+        It kind of depends on what your system requires, no free lunch :(
+      </p>
+
+      <h3>Error correction</h3>
+
+      <p>
+        And the last area, which is the one I'm working on the most at the moment,
+        is actually an open collaboration that has been set up between the teams here at Edinburgh
+        in error correction and distributed quantum computing, and at Heriot-Watt University.
+        We're exploring this question of global versus local in an error-corrected setting.
+        It's really difficult to even formulate this question in a way that makes sense
+        for both the error correction audience and the distributed computing audience.
+        All three fields are incredibly hard in their own right,
+        but if quantum software has a final boss, it's error correction.
+        And it's been really interesting for me to have this question that seems so important and fundamental
+        develop into an avenue to collaborate with what I would consider to be, you know,
+        the field at the height of current quantum computing research.
+      </p>
+
+    </section>
+
+    <section>
+      <h2>Final comments</h2>
+
+      <p>
+        So if you're coming to QCTip in Oxford, I'll be happy to chat with you about my poster.
+        You can see a current version of it down below (I cannot promise it will not change).
+        I hope this question inspires more researchers to think about how other aspects of quantum computing
+        and quantum software might need to be factored into the pipeline of distributed quantum computing
+        or hybrid quantum-classical computing.
+        The questions themselves might seem relatively trivial
+        but they can lead to quite important cost reductions,
+        and at the end of the day these are incredibly expensive and difficult to access machines.
+        We wanna use them to the best of our abilities
+        and ensure that all the investment that's gone into them is well exploited.
+      </p>
+
+      <p><em>P.S: the amount of "so"'s I have taken out of this text is nuts.</em></p>
+
+    </section>
+
+    <section>
+      <h2>Poster</h2>
+
+      <figure style="max-width: 100%; text-align: center; margin: 20px 0;">
+        <iframe
+          src="../images/Global vs Local encodings for DQC.pdf#view=Fit"
+          style="width: 100%; height: 800px; border: 1px solid #ccc; border-radius: 4px;"
+          title="Global versus Local Encodings for DQC poster">
+        </iframe>
+        <figcaption style="margin-top: 10px; font-style: italic; color: #666;">
+          Global versus Local Encodings for DQC — QCTip 2026 poster.
+        </figcaption>
+      </figure>
+
+    </section>
+
+  </article>
+</body>
+</html>
