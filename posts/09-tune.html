@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>What can you tune?</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+  <article>
+    <h1>What can you tune?</h1>
+    <p><em>30th of May 2026</em></p>
+
+    <p>
+    One of the main concerns and bottlenecks for distributed quantum computing is its cost. 
+    Both quantum network and compute resources are expensive and rare. 
+    Entire fields, such as circuit optimisation and error correction, have been developed to reduce the resource consumption and noise of quantum devices.
+    In this blog post I will discuss the possible reductions one can utilise to mitigate the cost of distribution from both the network and compute perspective. 
+    I will also discuss their current level of exploration for DQC.    </p>
+
+    <p><a href="../index.html">← Back to all posts</a></p>
+ 
+<section>
+Quantum technologies hold much promise, but they are and will continue to be for the foreseeable future, an expensive and rare resource.
+I would bet that the amount of quantum development done in a certain country can be directly linked to the country's richness.
+That being said, having the money to do quantum research should go hand in hand with having the good sense to not waste that resource.
+Entire sub-fields in quantum tech, particularly within the quantum computing world, have been developed to mitigate this usage.
+They range from reductions in the number of commands given to a device to achieve a desired state (circuit optimisation) to
+the coordination of various noisy qubits to achieve a noise-free(~ish) qubit (error correction).
+Through this blog post I will refer to these methods under the umbrella of "cost reduction strategies", 
+because at the end of the day, 
+whereas they reduce the number of gates a computer uses or enable fault tolerance, 
+they are methods that enable a minimisation the quantum resources consumed to achieve a desired quantum state. 
+</section>
+
+<section>
+I have decided to make an entire blog post dedicated to "cost reduction strategies" because they have recently become 
+a more popular area of research within DQC. Particularly we're seeing a growing number of DQEC (Distributed Quantum Error Correction) papers,
+though most focus on hardware implementations rather than the compiler and cost-reduction questions this post is concerned with.
+These strategies are and will continue to be essential for the functional use of quantum devices, but the distributed setting 
+introduces some new considerations into the cost reduction game that are worth exploring. 
+In this blog post I will take a two-sided approach, explaining the quantum networking and quantum compute cost reduction strategies separately 
+within the wider context of DQC, which you can think of as a specific application of quantum networks 
+and a framework of quantum compute. 
+As always, the post will be poisoned with personal opinions and current news from the field.
+</section>
+
+<section> 
+    <h2>Communication</h2>
+
+From the networking side many of the demands are equivalent to those that we see in classical networks:
+avoiding bottlenecks, managing latency, scheduling resource allocation.
+Not only that but we always assume that where we have a quantum network we also have a classical network enabling the classical channel communication.
+So essentially quantum networks are a plus atop classical networks. 
+But, they do, as the name implies bring about a new resource: EPR pairs (also known as entangled pairs).
+For each non-local operation (stuff like a distributed CNOT gate over two devices - telegate) and teleportation (moving a qubit state from one device to another - teledata)
+we'll consume at least one EPR pair.
+As with all other resources in networking, this one brings about a whole new set of issues regarding its availability (we need to have EPR pairs
+at the right place and time, to avoid decoherence and long compute times). Let's dive in.
+
+    <h3>EPR Pairs</h3>
+As I said, we essentially need EPR pairs to distribute compute over non-local quantum channels that interconnect quantum devices. 
+They need to be available on the network for when they are demanded by the compute for inter-QPU operations. 
+This availability on demand is perhaps one of the oldest and hardest networking problems for any resource —
+in classical networking this is known as resource reservation, and the RSVP protocol was built precisely for it.
+It's also particularly problematic in the quantum setting for a few reasons:
+
+<ol>
+  <li><strong>Decoherence:</strong> if the compute has to wait for too long noise will start degrading the computation.
+  This unfortunately also applies to the EPR pairs themselves, as they wait they decay
+  (note that quantum memories are in development, but building ones with sufficient coherence times and retrieval fidelity for network use remains an open engineering challenge).</li>
+
+  <li><strong>Probabilistic nature:</strong> each EPR pair won't be good — we have to do entanglement purification over many of them to generate a good pair, so the process of "generation" is non-trivial.</li>
+
+  <li><strong>Expense:</strong> beyond being delicate, EPR pairs are a very expensive resource, so unused pairs represent an incredible waste.
+  Thus the goal is not only to have the pairs ready for consumption when needed,
+  but to also not have too many, as each unused pair is wasted.</li>
+</ol>
+
+    <h3>Heuristics my beloved</h3>
+The way forward here emerges from the classical networking world — schedulers designed for resource reservation, such as Weighted Fair Queuing (Parekh &amp; Gallager, 1993), are the natural inspiration.
+We need to use schedulers and other heuristics to coordinate the generation of these EPR pairs and
+implement the primitives that distributed quantum compute demands.
+
+  <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+    <strong>Primitives</strong> are fundamental, reusable protocol building blocks that are commonly executed by devices in a quantum network.
+    For instance, the role of a quantum repeater is to perform entanglement swaps between two adjacent devices.
+    Entanglement swapping is itself a primitive.
+    Another example would be CAT communication for non-local gates.
+    Or EPR pair generation.
+  </div>
+
+So who is scheduling what?
+<br>
+
+The scheduling of EPR pair generation is an active and growing area. 
+The general approach is to adapt classical resource scheduling frameworks (greedy algorithms, 
+resource constrained project scheduling (RCPSP)) and increasingly, 
+throw reinforcement learning at the problem. Groups at Tyndall National Institute (Dublin) have been using Deep Q-Networks 
+to optimise delay and fairness across entanglement requests in repeater networks. 
+Sabanci University introduced the concept of <em>entanglement freshness</em> 
+(formalised as a Fidelity-Age metric) which tracks how "old" a Bell pair is before it decoheres and uses it to drive scheduling decisions. 
+The quantum twist that makes all of this harder than the classical case is exactly what you'd expect: EPR pairs are perishable, 
+probabilistic to generate, and expensive. 
+Classical schedulers don't account for any of that.
+<br>
+
+Beyond scheduling, the other main heuristic frontier in DQC is circuit partitioning, 
+aka deciding how to cut up a computation across devices in the first place. 
+This is essentially a hypergraph problem, and people are leaning heavily on classical hypergraph partitioning heuristics 
+(KaHyPar, beam search, OEE). 
+You can find a whole blog post just on those <a href="./06-hypergraph.html">here</a>.
+A recent interesting development in this space is taking into account step-by-step capacity,
+leading to <em>time-aware</em> partitioning:
+rather than cutting a circuit statically, you assign qubits to devices incrementally across time steps.
+This better reflects the temporal nature of circuit execution, and avoids "locking" some qubits out of use during time steps where they would not be functional.
+
+</section>
+
+<section> 
+    <h2>Compute</h2>
+
+Now beyond the distributed bit of DQC, we also have the QC bit, which in itself also requires cost reductions.
+I believe there are two main issues at this level:
+
+<ol>
+  <li>Actually minimizing the amount of computation we do: this is really cohesive with the spirit of DQC,
+  which in itself emerges from the objective of computing a computation that wouldn't fit within one device.</li>
+
+  <li>Dealing with the noise injections coming from the quantum network atop the noise existing within the devices to
+  achieve the desired state aka computational outcome.</li>
+</ol>
+
+    <h3>Circuit optimisation</h3>
+Within circuit optimisation we can have 2 goals:
+
+<ol>
+  <li>Minimising cross-QPU gates: these are the most expensive gates in most architectures and consume EPR pairs.</li>
+  <li>Minimising computations within devices: this is an analogous objective to circuit optimisation for monolithic devices.</li>
+</ol>
+
+The minimisation of cross-QPU gates has led to some quite interesting work recently.
+A nice example is Welinq's <em>araQne</em> compiler. Before partitioning, it reorders gates (exploiting commutativity and control-symmetry) to pack as many as possible into gate packets: groups of gates that can be teleported together using a single EPR pair. The result is a circuit that is cheaper to distribute before you've even touched the partitioning. They report around a 30% reduction in EPR pairs for a 2-QPU split.
+
+<a href="https://arxiv.org/pdf/2605.02727" target="_blank">My recent work</a> 
+points that global encodings (optimising the original circuit before partitioning) enables cross-QPU gate reductions, 
+whilst local encodings (optimising the subcircuits, aka after partitioning) leads to much better reductions within QPUs. 
+You can read more about this idea of encodings in 
+<a href="./08-encodings.html">this blog post</a>.
+
+    <h3>Compute time</h3>
+Now, there is also the question of compute time. 
+In the classical world one of the main drives of DQC is the parallelisation of algorithms to achieve a speedup. 
+This is often subsumed into the wider scope and objectives of circuit optimisation, namely through
+the minimisation of circuit width.
+
+    <h3>Error correction and mitigation</h3>
+Finally there is the reduction of noise within these systems.
+The noise problem is arguably the biggest problem in Quantum Computing today.
+In DQC noise emerges from individual QPUs but also from the network, making the problem even larger.
+There are two frameworks to combat noise: error correction and error mitigation.
+Both are made up of multiple sub-techniques but their main differentiation is that error correction assures fault tolerance whilst error mitigation does not
+(but on the other side of the coin it is much cheaper and more implementable).
+
+  <div style="background-color:#fff8dc; border-left:4px solid #e6d87c; padding:10px 15px; margin:10px 0;">
+    <strong>Fault tolerance</strong> is not the same as low noise. It is a guarantee: as long as the physical error rate stays below a certain threshold, the logical computation will succeed regardless of how long it runs.
+    Quantum error correction is the main tool for achieving it, encoding one logical qubit across many physical ones so that errors can be detected and corrected before they compound.
+    Error <em>mitigation</em>, by contrast, reduces noise but offers no such guarantee (they essentially are unsafe heuristics).
+  </div>
+
+</section>
+
+</article>
+</body>
+</html>
